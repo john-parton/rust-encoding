@@ -306,7 +306,7 @@ mod bigfive2003_tests {
     fn bench_encode_short_text(bencher: &mut test::Bencher) {
         let s = testutils::TRADITIONAL_CHINESE_TEXT;
         bencher.bytes = s.len() as u64;
-        bencher.iter(|| test::black_box( BigFive2003Encoding.encode(&s, EncoderTrap::Strict) ))
+        bencher.iter(|| test::black_box(BigFive2003Encoding.encode(&s, EncoderTrap::Strict)))
     }
 
     #[bench]
@@ -316,6 +316,6 @@ mod bigfive2003_tests {
             .ok()
             .unwrap();
         bencher.bytes = s.len() as u64;
-        bencher.iter(|| test::black_box( BigFive2003Encoding.decode(&s, DecoderTrap::Strict) ))
+        bencher.iter(|| test::black_box(BigFive2003Encoding.decode(&s, DecoderTrap::Strict)))
     }
 }

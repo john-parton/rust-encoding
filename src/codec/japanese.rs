@@ -478,7 +478,7 @@ mod eucjp_tests {
     fn bench_encode_short_text(bencher: &mut test::Bencher) {
         let s = testutils::JAPANESE_TEXT;
         bencher.bytes = s.len() as u64;
-        bencher.iter(|| test::black_box( EUCJPEncoding.encode(&s, EncoderTrap::Strict) ))
+        bencher.iter(|| test::black_box(EUCJPEncoding.encode(&s, EncoderTrap::Strict)))
     }
 
     #[bench]
@@ -488,7 +488,7 @@ mod eucjp_tests {
             .ok()
             .unwrap();
         bencher.bytes = s.len() as u64;
-        bencher.iter(|| test::black_box( EUCJPEncoding.decode(&s, DecoderTrap::Strict) ))
+        bencher.iter(|| test::black_box(EUCJPEncoding.decode(&s, DecoderTrap::Strict)))
     }
 }
 
@@ -853,7 +853,7 @@ mod windows31j_tests {
     fn bench_encode_short_text(bencher: &mut test::Bencher) {
         let s = testutils::JAPANESE_TEXT;
         bencher.bytes = s.len() as u64;
-        bencher.iter(|| test::black_box( Windows31JEncoding.encode(&s, EncoderTrap::Strict) ))
+        bencher.iter(|| test::black_box(Windows31JEncoding.encode(&s, EncoderTrap::Strict)))
     }
 
     #[bench]
@@ -863,7 +863,7 @@ mod windows31j_tests {
             .ok()
             .unwrap();
         bencher.bytes = s.len() as u64;
-        bencher.iter(|| test::black_box( Windows31JEncoding.decode(&s, DecoderTrap::Strict) ))
+        bencher.iter(|| test::black_box(Windows31JEncoding.decode(&s, DecoderTrap::Strict)))
     }
 }
 
@@ -1539,7 +1539,7 @@ mod iso2022jp_tests {
     fn bench_encode_short_text(bencher: &mut test::Bencher) {
         let s = testutils::JAPANESE_TEXT;
         bencher.bytes = s.len() as u64;
-        bencher.iter(|| test::black_box( ISO2022JPEncoding.encode(&s, EncoderTrap::Strict) ))
+        bencher.iter(|| test::black_box(ISO2022JPEncoding.encode(&s, EncoderTrap::Strict)))
     }
 
     #[bench]
@@ -1549,6 +1549,6 @@ mod iso2022jp_tests {
             .ok()
             .unwrap();
         bencher.bytes = s.len() as u64;
-        bencher.iter(|| test::black_box( ISO2022JPEncoding.decode(&s, DecoderTrap::Strict) ))
+        bencher.iter(|| test::black_box(ISO2022JPEncoding.decode(&s, DecoderTrap::Strict)))
     }
 }
