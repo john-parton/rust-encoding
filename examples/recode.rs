@@ -5,13 +5,13 @@
 extern crate encoding;
 extern crate getopts;
 
-use std::{io, env};
-use std::io::{Read, Write};
-use std::fs::File;
-use std::path::Path;
-use encoding::{EncoderTrap, DecoderTrap};
 use encoding::label::encoding_from_whatwg_label;
+use encoding::{DecoderTrap, EncoderTrap};
 use getopts::Options;
+use std::fs::File;
+use std::io::{Read, Write};
+use std::path::Path;
+use std::{env, io};
 
 fn main() {
     let args: Vec<_> = env::args().collect();
@@ -19,8 +19,12 @@ fn main() {
     let mut opts = Options::new();
     opts.optopt("f", "from-code", "set input encoding", "NAME");
     opts.optopt("t", "to-code", "set output encoding", "NAME");
-    opts.optopt("e", "error-policy",
-                "set error policy (one of strict, ignore, replace, ncr-escape)", "POLICY");
+    opts.optopt(
+        "e",
+        "error-policy",
+        "set error policy (one of strict, ignore, replace, ncr-escape)",
+        "POLICY",
+    );
     opts.optflag("c", "", "same as `--error-policy=ignore`");
     opts.optopt("o", "output", "output file", "FILE");
     opts.optflag("h", "help", "print this help menu");
@@ -30,7 +34,10 @@ fn main() {
         Err(e) => panic!(e.to_string()),
     };
     if matches.opt_present("h") {
-        println!("{}", opts.usage("Converts the character encoding using rust-encoding."));
+        println!(
+            "{}",
+            opts.usage("Converts the character encoding using rust-encoding.")
+        );
         return;
     }
 
@@ -80,7 +87,10 @@ fn main() {
 
     // XXX should really use the incremental interface
     let mut ret = Vec::new();
-    input.read_to_end(&mut ret).ok().expect("cannot read from the input");
+    input
+        .read_to_end(&mut ret)
+        .ok()
+        .expect("cannot read from the input");
     let decoded = match inenc.decode(&ret, intrap) {
         Ok(s) => s,
         Err(e) => panic!("decoder error: {}", e),
@@ -91,4 +101,3 @@ fn main() {
     };
     output.write_all(&encoded).unwrap();
 }
-

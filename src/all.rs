@@ -4,8 +4,8 @@
 
 //! A list of all supported encodings. Useful for encodings fixed in the compile time.
 
-use crate::index_singlebyte as index;
 use crate::codec;
+use crate::index_singlebyte as index;
 use crate::types::EncodingRef;
 
 macro_rules! unique(
@@ -81,8 +81,8 @@ unique!(var=HZ, mod=codec::simpchinese, val=HZEncoding);
 unique!(var=BIG5_2003, mod=codec::tradchinese, val=BigFive2003Encoding);
 
 pub mod whatwg {
-    use crate::index_singlebyte as index;
     use crate::codec;
+    use crate::index_singlebyte as index;
 
     singlebyte!(var=X_USER_DEFINED, mod=codec::whatwg::x_user_defined,
                 name="pua-mapped-binary", whatwg=Some("x-user-defined"));
@@ -141,4 +141,3 @@ pub fn encodings() -> &'static [EncodingRef] {
     ];
     ENCODINGS
 }
-
