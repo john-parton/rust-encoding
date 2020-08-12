@@ -14,7 +14,7 @@ from pathlib import Path
 
 
 def open_index(path, comments):
-    for line in open(path, 'rb'):
+    for line in path.open('rb'):
         line = line.strip()
         if not line:
             continue
@@ -28,22 +28,24 @@ def open_index(path, comments):
 
 
 def read_index(opts, crate, name, comments):
-    dirname = os.path.join(os.path.dirname(__file__), crate)
-    path = os.path.join(dirname, 'index-%s.txt' % name)
-    if os.path.isfile(path):
+    dirname = Path(__file__).parent.resolve() / crate
+
+    path = dirname / f'index-{name}.txt'
+
+    if path.is_file():  # For index-armscii-8
         return open_index(path, comments)
 
-    try:
-        os.mkdir(opts.cache_dir)
-    except OSError:
-        pass
-    cached_path = os.path.join(opts.cache_dir, '%s.txt' % name)
-    if not opts.flush_cache and os.path.exists(cached_path):
+    os.makedirs(opts.cache_dir, exist_ok=True)
+
+    cached_path = opts.cache_dir / f'{name}.txt'
+    
+    if not opts.flush_cache and cached_path.exists():
         print('(cached)', end='', file=sys.stderr)
     else:
         try:
-            urllib.request.urlretrieve('http://encoding.spec.whatwg.org/index-%s.txt' % name,
-                                       cached_path)
+            urllib.request.urlretrieve(
+                f'https://encoding.spec.whatwg.org/index-{name}.txt', cached_path
+            )
         except Exception:
             try:
                 os.unlink(cached_path)
@@ -55,12 +57,13 @@ def read_index(opts, crate, name, comments):
 
 
 def mkdir_and_open(crate, name):
-    dirname = os.path.join(os.path.dirname(__file__), crate)
-    try:
-        os.mkdir(dirname)
-    except Exception:
-        pass
-    return open(os.path.join(dirname, '%s.rs' % name.replace('-', '_')), 'wb')
+    crate_path = Path(__file__).parent.resolve() / crate
+
+    os.makedirs(crate_path, exist_ok=True)
+
+    rust_file = crate_path / ('%s.rs' % name.replace('-', '_'))
+
+    return rust_file.open('wt', encoding='utf-8')
 
 
 def dedent(s):
