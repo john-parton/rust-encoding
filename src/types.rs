@@ -67,7 +67,7 @@ mod tests {
             prepend: "",
         };
 
-        assert_eq!(format!("{:?}", &enc as &Encoding), "Encoding(my encoding)");
+        assert_eq!(format!("{:?}", &enc as &dyn Encoding), "Encoding(my encoding)");
     }
 
     #[test]
