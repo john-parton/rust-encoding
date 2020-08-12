@@ -409,10 +409,10 @@ def generate_multi_byte_index(opts, crate, name):
                |        (r - dr) * (190 - 96) + (c - 96)
                |    } else {
                |        let dc = match c {
-               |            0...25 => 0,
-               |            26...31 => return X,
-               |            32...57 => 6,
-               |            58...63 => return X,
+               |            0..=25 => 0,
+               |            26..=31 => return X,
+               |            32..=57 => 6,
+               |            58..=63 => return X,
                |            _ => 12,
                |        };
                |        (125 - 4) * (190 - 96) + r * (96 - 12) + (c - dc)
@@ -425,8 +425,8 @@ def generate_multi_byte_index(opts, crate, name):
                |        let r = code / (190 - 96);
                |        let c = code % (190 - 96);
                |        let dr = match r {
-               |            0...43 => 0,
-               |            44...68 => 3,
+               |            0..=43 => 0,
+               |            44..=68 => 3,
                |            _ => 4,
                |        };
                |        (r + dr) * 190 + (c + 96)
@@ -435,8 +435,8 @@ def generate_multi_byte_index(opts, crate, name):
                |        let r = code / (96 - 12);
                |        let c = code % (96 - 12);
                |        let dc = match c {
-               |            0...25 => 0,
-               |            26...51 => 6,
+               |            0..=25 => 0,
+               |            26..=51 => 6,
                |            _ => 12,
                |        };
                |        r * 190 + (c + dc)
@@ -472,14 +472,14 @@ def generate_multi_byte_index(opts, crate, name):
                |
                |fn premap_forward(code: u16) -> u16 {
                |    match code {
-               |        0...689 => code,
-               |        690...1127 => X,
-               |        1128...1219 => code - 438,
-               |        1220...1409 => X,
-               |        1410...7807 => code - 628,
-               |        7808...8271 => X,
-               |        8272...8647 => code - 1092,
-               |        8648...10715 => X,
+               |        0..=689 => code,
+               |        690..=1127 => X,
+               |        1128..=1219 => code - 438,
+               |        1220..=1409 => X,
+               |        1410..=7807 => code - 628,
+               |        7808..=8271 => X,
+               |        8272..=8647 => code - 1092,
+               |        8648..=10715 => X,
                |        _ => code - 3160,
                |    }
                |}
@@ -487,10 +487,10 @@ def generate_multi_byte_index(opts, crate, name):
                |#[cfg(feature = "no-optimized-legacy-encoding")]
                |fn premap_backward(code: u16) -> u16 {
                |    match code {
-               |        0...689 => code,
-               |        690...781 => code + 438,
-               |        782...7179 => code + 628,
-               |        7180...7555 => code + 1092,
+               |        0..=689 => code,
+               |        690..=781 => code + 438,
+               |        782..=7179 => code + 628,
+               |        7180..=7555 => code + 1092,
                |        _ => code.saturating_add(3160),
                |    }
                |}
@@ -514,10 +514,10 @@ def generate_multi_byte_index(opts, crate, name):
                |
                |fn premap_forward(code: u16) -> u16 {
                |    match code {
-               |        0...174 => code,
-               |        175...533 => X,
-               |        534...1026 => code - 359,
-               |        1027...1409 => X,
+               |        0..=174 => code,
+               |        175..=533 => X,
+               |        534..=1026 => code - 359,
+               |        1027..=1409 => X,
                |        _ => code - 742,
                |    }
                |}
@@ -525,8 +525,8 @@ def generate_multi_byte_index(opts, crate, name):
                |#[cfg(feature = "no-optimized-legacy-encoding")]
                |fn premap_backward(code: u16) -> u16 {
                |    match code {
-               |        0...174 => code,
-               |        175...667 => code + 359,
+               |        0..=174 => code,
+               |        175..=667 => code + 359,
                |        _ => code.saturating_add(742),
                |    }
                |}
@@ -563,7 +563,7 @@ def generate_multi_byte_index(opts, crate, name):
         for value, key in list(invdata.items()):
             if key < hkscslimit:
                 del invdata[value]
-        rawdups.append('0...%d' % (hkscslimit - 1))  # no consistency testing for them
+        rawdups.append('0..=%d' % (hkscslimit - 1))  # no consistency testing for them
 
         # there are also some duplicate entries where the *later* mapping is canonical
         swappedcanon = [0x2550, 0x255E, 0x2561, 0x256A, 0x5341, 0x5345]
@@ -1032,7 +1032,7 @@ def main():
         '--max-backward-search-multibyte', type=lambda v: int(v, 0),
         metavar='MAX_SEARCH', default='0x200',
         help='set the max search limit of the unoptimized backward mapping '
-             'for multi-byte indices [default: %(default)s]\n'
+             'for multi-byte indices [default: %(default)s]'
     )
     parser.add_argument(
         '--no-premapping', action='store_true',
@@ -1043,16 +1043,14 @@ def main():
     )
     opts = parser.parse_args()
 
-    assert False, opts.cache_dir
-
     totalsz = totalszslow = 0
     for index, generate in INDICES:
-        crate, _, index = index.partition('/')
+        crate, __, index = index.partition('/')
         if opts.filters and all(s not in index for s in opts.filters):
             continue
         if opts.func_filter and generate is not opts.func_filter:
             continue
-        print('generating index %s...' % index, end=' ', file=sys.stderr)
+        print('generating index %s...' % index, end='', file=sys.stderr)
         forwardsz, backwardsz, backwardszslow = generate(opts, crate, index)
         totalsz += forwardsz + backwardsz
         totalszslow += forwardsz + backwardszslow
