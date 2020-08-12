@@ -223,6 +223,8 @@
 //! [vendor-provided mappings from the Unicode consortium](http://www.unicode.org/Public/MAPPINGS/).
 //! Whenever in doubt, look at the source code and specifications for detailed explanations.
 
+#![feature(assoc_char_funcs)]
+
 #![cfg_attr(test, feature(test))] // lib stability features as per RFC #507
 
 extern crate encoding_index_japanese as index_japanese;

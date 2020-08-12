@@ -24,7 +24,7 @@ def open_index(path, comments):
         parts = line.split(None, 2)
         key = int(parts[0], 0)
         value = int(parts[1], 0)
-        yield key, value
+        yield key + 128, value
 
 
 def read_index(opts, crate, name, comments):
@@ -271,7 +271,7 @@ def generate_single_byte_index(opts, crate, name):
 
     comments = []
     for key, value in read_index(opts, crate, name, comments):
-        assert 0 <= key < 128 and 0 <= value < 0xffff and key not in forward and value not in backward
+        assert 128 <= key < 256 and 0 <= value < 0xffff and key not in forward and value not in backward
         forward[key] = value
         backward[value] = key
 
