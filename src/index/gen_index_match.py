@@ -2,6 +2,8 @@
 # Copyright (c) 2013-2015, Kang Seonghoon.
 # See README.md and LICENSE.txt for details.
 
+import copy
+
 import urllib.request
 import urllib.parse
 import urllib.error
@@ -267,13 +269,52 @@ def make_minimal_search(data, invdata, premap, maxsearch):
 
 
 def generate_single_byte_index(opts, crate, name):
-    forward, backward = {}, {}
+    forward, backward, no_ops = {}, {}, []
 
     comments = []
     for key, value in read_index(opts, crate, name, comments):
         assert 128 <= key < 256 and 0 <= value < 0xffff and key not in forward and value not in backward
-        forward[key] = value
-        backward[value] = key
+        
+        # This maps (codepoint => Some(codepoint))
+        # I thought the compiler might be able to do something clever with these
+        if False and key == value:
+            no_ops.append(key)
+        else:
+            forward[key] = value
+            backward[value] = key
+        
+
+    ranges = []
+    
+    if no_ops:
+        rng = {
+            'min': no_ops[0],
+            'max': no_ops[0]
+        }
+        
+        for left, right in zip(no_ops[:-1], no_ops[1:]):
+            if right == left + 1:
+                rng['max'] = right
+            else:
+                ranges.append(
+                    copy.deepcopy(rng)
+                )
+                rng = {
+                    'min': right,
+                    'max': right
+                }
+                
+        ranges.append(copy.deepcopy(rng))
+    
+    
+    
+    preds = []
+    
+    for rng in ranges:
+        if rng['min'] == rng['max']:
+            preds.append(str(rng['min']))
+        else:
+            preds.append(f"{rng['min']}..={rng['max']}")
 
     with mkdir_and_open(crate, name) as f:
         write_header(f, name, comments)
@@ -283,8 +324,13 @@ def generate_single_byte_index(opts, crate, name):
         p("#[inline]")
         p("pub fn forward(code: u8) -> Option<u16> {")
         p("    match code {")
+                
+        if preds:
+            p(f"        {' | '.join(preds)} => Some(code as u16),")
+            
         for key, value in forward.items():
             p(f"        {key} => Some({value}),")
+            
         p("        _ => None")
         p("    }")
         p("}")
@@ -296,6 +342,9 @@ def generate_single_byte_index(opts, crate, name):
         p("#[inline]")
         p("pub fn backward(code: u32) -> Option<u8> {")
         p("    match code {")
+        if preds:
+            p(f"        {' | '.join(preds)} => Some(code as u8),")
+                
         for key, value in backward.items():
             p(f"        {key} => Some({value}),")
         p("        _ => None")

@@ -162,10 +162,9 @@ pub mod iso_8859_1 {
 
 #[cfg(test)]
 mod tests {
-    use crate::all::ISO_8859_2;
-    use crate::all::WINDOWS_1252;
-    use crate::testutils::ASCII_TEXT;
-    use crate::testutils::IRISH_TEXT;
+    use crate::all::{ISO_8859_2, ISO_8859_5};
+    use crate::all::{WINDOWS_1252};
+    use crate::testutils::{ASCII_TEXT, IRISH_TEXT, RUSSIAN_TEXT};
     use crate::types::*;
 
     #[test]
@@ -175,69 +174,102 @@ mod tests {
         assert_feed_err!(e, "A", "\u{10000}", "B", [0x41]);
     }
     
-    #[bench]
-    fn bench_encode_english(bencher: &mut test::Bencher) {
-        bencher.bytes = ASCII_TEXT.len() as u64;
-        bencher.iter(|| {
-            test::black_box(
-                WINDOWS_1252.encode(&ASCII_TEXT, EncoderTrap::Strict)
-            )
-        })
-    }
+#[bench]
+fn bench_encode_english(bencher: &mut test::Bencher) {
+    bencher.bytes = ASCII_TEXT.len() as u64;
+    bencher.iter(|| {
+        test::black_box(
+            WINDOWS_1252.encode(&ASCII_TEXT, EncoderTrap::Strict)
+        )
+    })
+}
 
-    #[bench]
-    fn bench_decode_english(bencher: &mut test::Bencher) {
-        let bytes = WINDOWS_1252.encode(ASCII_TEXT, EncoderTrap::Strict).unwrap();
-        
-        bencher.bytes = bytes.len() as u64;
-        bencher.iter(|| {
-            test::black_box(
-                WINDOWS_1252.decode(&bytes, DecoderTrap::Strict)
-            )
-        })
-    }
-
-    #[bench]
-    fn bench_roundtrip_english(bencher: &mut test::Bencher) {
-        bencher.bytes = ASCII_TEXT.len() as u64;
-        bencher.iter(|| {
-            let bytes = WINDOWS_1252.encode(&ASCII_TEXT, EncoderTrap::Strict).unwrap();
-            test::black_box(
-                WINDOWS_1252.decode(&bytes, DecoderTrap::Strict)
-            )
-        })
-    }
+#[bench]
+fn bench_decode_english(bencher: &mut test::Bencher) {
+    let bytes = WINDOWS_1252.encode(ASCII_TEXT, EncoderTrap::Strict).unwrap();
     
-    #[bench]
-    fn bench_encode_irish(bencher: &mut test::Bencher) {
-        bencher.bytes = IRISH_TEXT.len() as u64;
-        bencher.iter(|| {
-            test::black_box(
-                WINDOWS_1252.encode(&ASCII_TEXT, EncoderTrap::Strict)
-            )
-        })
-    }
+    bencher.bytes = bytes.len() as u64;
+    bencher.iter(|| {
+        test::black_box(
+            WINDOWS_1252.decode(&bytes, DecoderTrap::Strict)
+        )
+    })
+}
 
-    #[bench]
-    fn bench_decode_irish(bencher: &mut test::Bencher) {
-        let bytes = WINDOWS_1252.encode(IRISH_TEXT, EncoderTrap::Strict).unwrap();
-        
-        bencher.bytes = bytes.len() as u64;
-        bencher.iter(|| {
-            test::black_box(
-                WINDOWS_1252.decode(&bytes, DecoderTrap::Strict)
-            )
-        })
-    }
+#[bench]
+fn bench_roundtrip_english(bencher: &mut test::Bencher) {
+    bencher.bytes = ASCII_TEXT.len() as u64;
+    bencher.iter(|| {
+        let bytes = WINDOWS_1252.encode(&ASCII_TEXT, EncoderTrap::Strict).unwrap();
+        test::black_box(
+            WINDOWS_1252.decode(&bytes, DecoderTrap::Strict)
+        )
+    })
+}
 
-    #[bench]
-    fn bench_roundtrip_irish(bencher: &mut test::Bencher) {
-        bencher.bytes = IRISH_TEXT.len() as u64;
-        bencher.iter(|| {
-            let bytes = WINDOWS_1252.encode(&IRISH_TEXT, EncoderTrap::Strict).unwrap();
-            test::black_box(
-                WINDOWS_1252.decode(&bytes, DecoderTrap::Strict)
-            )
-        })
-    }
+#[bench]
+fn bench_encode_irish(bencher: &mut test::Bencher) {
+    bencher.bytes = IRISH_TEXT.len() as u64;
+    bencher.iter(|| {
+        test::black_box(
+            WINDOWS_1252.encode(&ASCII_TEXT, EncoderTrap::Strict)
+        )
+    })
+}
+
+#[bench]
+fn bench_decode_irish(bencher: &mut test::Bencher) {
+    let bytes = WINDOWS_1252.encode(IRISH_TEXT, EncoderTrap::Strict).unwrap();
+    
+    bencher.bytes = bytes.len() as u64;
+    bencher.iter(|| {
+        test::black_box(
+            WINDOWS_1252.decode(&bytes, DecoderTrap::Strict)
+        )
+    })
+}
+
+#[bench]
+fn bench_roundtrip_irish(bencher: &mut test::Bencher) {
+    bencher.bytes = IRISH_TEXT.len() as u64;
+    bencher.iter(|| {
+        let bytes = WINDOWS_1252.encode(&IRISH_TEXT, EncoderTrap::Strict).unwrap();
+        test::black_box(
+            WINDOWS_1252.decode(&bytes, DecoderTrap::Strict)
+        )
+    })
+}
+
+#[bench]
+fn bench_encode_russian(bencher: &mut test::Bencher) {
+    bencher.bytes = RUSSIAN_TEXT.len() as u64;
+    bencher.iter(|| {
+        test::black_box(
+            ISO_8859_5.encode(&RUSSIAN_TEXT, EncoderTrap::Strict)
+        )
+    })
+}
+
+#[bench]
+fn bench_decode_russian(bencher: &mut test::Bencher) {
+    let bytes = ISO_8859_5.encode(RUSSIAN_TEXT, EncoderTrap::Strict).unwrap();
+    
+    bencher.bytes = bytes.len() as u64;
+    bencher.iter(|| {
+        test::black_box(
+            ISO_8859_5.decode(&bytes, DecoderTrap::Strict)
+        )
+    })
+}
+
+#[bench]
+fn bench_roundtrip_russian(bencher: &mut test::Bencher) {
+    bencher.bytes = RUSSIAN_TEXT.len() as u64;
+    bencher.iter(|| {
+        let bytes = ISO_8859_5.encode(&RUSSIAN_TEXT, EncoderTrap::Strict).unwrap();
+        test::black_box(
+            ISO_8859_5.decode(&bytes, DecoderTrap::Strict)
+        )
+    })
+}
 }
