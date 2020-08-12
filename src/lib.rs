@@ -117,7 +117,7 @@
 //! use encoding::all::ASCII;
 //!
 //! // hexadecimal numeric character reference replacement
-//! fn hex_ncr_escape(_encoder: &mut RawEncoder, input: &str, output: &mut ByteWriter) -> bool {
+//! fn hex_ncr_escape(_encoder: &mut RawEncoder, input: &str, output: &mut dyn ByteWriter) -> bool {
 //!     let escapes: Vec<String> =
 //!         input.chars().map(|ch| format!("&#x{:x};", ch as isize)).collect();
 //!     let escapes = escapes.concat();
@@ -174,7 +174,7 @@
 //!
 //! **`RawEncoder`** is an experimental incremental encoder.
 //! At each step of `raw_feed`, it receives a slice of string
-//! and emits any encoded bytes to a generic `ByteWriter` (normally `Vec<u8>`).
+//! and emits any encoded bytes to a generic `dyn ByteWriter` (normally `Vec<u8>`).
 //! It will stop at the first error if any, and would return a `CodecError` struct in that case.
 //! The caller is responsible for calling `raw_finish` at the end of encoding process.
 //!

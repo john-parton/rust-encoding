@@ -48,7 +48,7 @@ impl RawEncoder for EUCJPEncoder {
     fn from_self(&self) -> Box<dyn RawEncoder> { EUCJPEncoder::new() }
     fn is_ascii_compatible(&self) -> bool { true }
 
-    fn raw_feed(&mut self, input: &str, output: &mut ByteWriter) -> (usize, Option<CodecError>) {
+    fn raw_feed(&mut self, input: &str, output: &mut dyn ByteWriter) -> (usize, Option<CodecError>) {
         output.writer_hint(input.len());
 
         for ((i,j), ch) in input.index_iter() {
@@ -78,7 +78,7 @@ impl RawEncoder for EUCJPEncoder {
         (input.len(), None)
     }
 
-    fn raw_finish(&mut self, _output: &mut ByteWriter) -> Option<CodecError> {
+    fn raw_finish(&mut self, _output: &mut dyn ByteWriter) -> Option<CodecError> {
         None
     }
 }
@@ -468,7 +468,7 @@ impl RawEncoder for Windows31JEncoder {
     fn from_self(&self) -> Box<dyn RawEncoder> { Windows31JEncoder::new() }
     fn is_ascii_compatible(&self) -> bool { true }
 
-    fn raw_feed(&mut self, input: &str, output: &mut ByteWriter) -> (usize, Option<CodecError>) {
+    fn raw_feed(&mut self, input: &str, output: &mut dyn ByteWriter) -> (usize, Option<CodecError>) {
         output.writer_hint(input.len());
 
         for ((i,j), ch) in input.index_iter() {
@@ -500,7 +500,7 @@ impl RawEncoder for Windows31JEncoder {
         (input.len(), None)
     }
 
-    fn raw_finish(&mut self, _output: &mut ByteWriter) -> Option<CodecError> {
+    fn raw_finish(&mut self, _output: &mut dyn ByteWriter) -> Option<CodecError> {
         None
     }
 }
@@ -799,7 +799,7 @@ impl RawEncoder for ISO2022JPEncoder {
     fn from_self(&self) -> Box<dyn RawEncoder> { ISO2022JPEncoder::new() }
     fn is_ascii_compatible(&self) -> bool { true }
 
-    fn raw_feed(&mut self, input: &str, output: &mut ByteWriter) -> (usize, Option<CodecError>) {
+    fn raw_feed(&mut self, input: &str, output: &mut dyn ByteWriter) -> (usize, Option<CodecError>) {
         output.writer_hint(input.len());
 
         let mut st = self.st;
@@ -844,7 +844,7 @@ impl RawEncoder for ISO2022JPEncoder {
         (input.len(), None)
     }
 
-    fn raw_finish(&mut self, _output: &mut ByteWriter) -> Option<CodecError> {
+    fn raw_finish(&mut self, _output: &mut dyn ByteWriter) -> Option<CodecError> {
         None
     }
 }

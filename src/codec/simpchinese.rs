@@ -55,10 +55,10 @@ impl GB18030Encoder {
 impl RawEncoder for GB18030Encoder {
     fn from_self(&self) -> Box<dyn RawEncoder> { GB18030Encoder::new() }
     fn is_ascii_compatible(&self) -> bool { true }
-    fn raw_feed(&mut self, input: &str, output: &mut ByteWriter) -> (usize, Option<CodecError>) {
+    fn raw_feed(&mut self, input: &str, output: &mut dyn ByteWriter) -> (usize, Option<CodecError>) {
         GBEncoder.raw_feed(input, output, false)
     }
-    fn raw_finish(&mut self, _output: &mut ByteWriter) -> Option<CodecError> { None }
+    fn raw_finish(&mut self, _output: &mut dyn ByteWriter) -> Option<CodecError> { None }
 }
 
 /// GBK, as a subset of GB 18030.
@@ -99,10 +99,10 @@ impl GBKEncoder {
 impl RawEncoder for GBKEncoder {
     fn from_self(&self) -> Box<dyn RawEncoder> { GBKEncoder::new() }
     fn is_ascii_compatible(&self) -> bool { true }
-    fn raw_feed(&mut self, input: &str, output: &mut ByteWriter) -> (usize, Option<CodecError>) {
+    fn raw_feed(&mut self, input: &str, output: &mut dyn ByteWriter) -> (usize, Option<CodecError>) {
         GBEncoder.raw_feed(input, output, true)
     }
-    fn raw_finish(&mut self, _output: &mut ByteWriter) -> Option<CodecError> { None }
+    fn raw_finish(&mut self, _output: &mut dyn ByteWriter) -> Option<CodecError> { None }
 }
 
 /// A shared encoder logic for GBK and GB 18030.
@@ -110,7 +110,7 @@ impl RawEncoder for GBKEncoder {
 struct GBEncoder;
 
 impl GBEncoder {
-    fn raw_feed(&mut self, input: &str, output: &mut ByteWriter,
+    fn raw_feed(&mut self, input: &str, output: &mut dyn ByteWriter,
                 gbk_flag: bool) -> (usize, Option<CodecError>) {
         output.writer_hint(input.len());
 
@@ -497,7 +497,7 @@ impl RawEncoder for HZEncoder {
     fn from_self(&self) -> Box<dyn RawEncoder> { HZEncoder::new() }
     fn is_ascii_compatible(&self) -> bool { false }
 
-    fn raw_feed(&mut self, input: &str, output: &mut ByteWriter) -> (usize, Option<CodecError>) {
+    fn raw_feed(&mut self, input: &str, output: &mut dyn ByteWriter) -> (usize, Option<CodecError>) {
         output.writer_hint(input.len());
 
         let mut escaped = self.escaped;
@@ -541,7 +541,7 @@ impl RawEncoder for HZEncoder {
         (input.len(), None)
     }
 
-    fn raw_finish(&mut self, _output: &mut ByteWriter) -> Option<CodecError> {
+    fn raw_finish(&mut self, _output: &mut dyn ByteWriter) -> Option<CodecError> {
         None
     }
 }

@@ -27,7 +27,7 @@ mod tests {
         }
         fn is_ascii_compatible(&self) -> bool { self.flag }
         fn raw_feed(&mut self, input: &str,
-                    output: &mut ByteWriter) -> (usize, Option<CodecError>) {
+                    output: &mut dyn ByteWriter) -> (usize, Option<CodecError>) {
             for ((i,j), ch) in input.index_iter() {
                 if ch <= '\u{7f}' && ch != self.prohibit {
                     if self.toggle && !self.prepend.is_empty() {
@@ -44,7 +44,7 @@ mod tests {
             }
             (input.len(), None)
         }
-        fn raw_finish(&mut self, _output: &mut ByteWriter) -> Option<CodecError> { None }
+        fn raw_finish(&mut self, _output: &mut dyn ByteWriter) -> Option<CodecError> { None }
     }
 
     struct MyEncoding { flag: bool, prohibit: char, prepend: &'static str }

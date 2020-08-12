@@ -43,7 +43,7 @@ impl RawEncoder for Windows949Encoder {
     fn from_self(&self) -> Box<dyn RawEncoder> { Windows949Encoder::new() }
     fn is_ascii_compatible(&self) -> bool { true }
 
-    fn raw_feed(&mut self, input: &str, output: &mut ByteWriter) -> (usize, Option<CodecError>) {
+    fn raw_feed(&mut self, input: &str, output: &mut dyn ByteWriter) -> (usize, Option<CodecError>) {
         output.writer_hint(input.len());
 
         for ((i,j), ch) in input.index_iter() {
@@ -64,7 +64,7 @@ impl RawEncoder for Windows949Encoder {
         (input.len(), None)
     }
 
-    fn raw_finish(&mut self, _output: &mut ByteWriter) -> Option<CodecError> {
+    fn raw_finish(&mut self, _output: &mut dyn ByteWriter) -> Option<CodecError> {
         None
     }
 }

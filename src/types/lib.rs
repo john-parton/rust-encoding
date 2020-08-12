@@ -145,13 +145,13 @@ pub trait RawEncoder: Send + 'static {
     /// and returns a byte offset to the first unprocessed character
     /// (that can be zero when the first such character appeared in the prior calls to `raw_feed`)
     /// and optional error information (None means success).
-    fn raw_feed(&mut self, input: &str, output: &mut ByteWriter) -> (usize, Option<CodecError>);
+    fn raw_feed(&mut self, input: &str, output: &mut dyn ByteWriter) -> (usize, Option<CodecError>);
 
     /// Finishes the encoder,
     /// pushes the an encoded byte sequence at the end of the given output,
     /// and returns optional error information (None means success).
     /// `remaining` value of the error information, if any, is always an empty string.
-    fn raw_finish(&mut self, output: &mut ByteWriter) -> Option<CodecError>;
+    fn raw_finish(&mut self, output: &mut dyn ByteWriter) -> Option<CodecError>;
 }
 
 /// Decoder converting a byte sequence into a Unicode string.
@@ -207,8 +207,8 @@ pub trait Encoding {
         self.encode_to(input, trap, &mut ret).map(|_| ret)
     }
 
-    /// Encode into a `ByteWriter`.
-    fn encode_to(&self, input: &str, trap: EncoderTrap, ret: &mut ByteWriter)
+    /// Encode into a `dyn ByteWriter`.
+    fn encode_to(&self, input: &str, trap: EncoderTrap, ret: &mut dyn ByteWriter)
         -> Result<(), Cow<'static, str>>
     {
         // we don't need to keep `unprocessed` here;
@@ -303,7 +303,7 @@ impl<'a> fmt::Debug for &'a Encoding {
 
 /// A type of the bare function in `EncoderTrap` values.
 pub type EncoderTrapFunc =
-    extern "Rust" fn(encoder: &mut RawEncoder, input: &str, output: &mut ByteWriter) -> bool;
+    extern "Rust" fn(encoder: &mut RawEncoder, input: &str, output: &mut dyn ByteWriter) -> bool;
 
 /// A type of the bare function in `DecoderTrap` values.
 pub type DecoderTrapFunc =
@@ -374,8 +374,8 @@ pub enum EncoderTrap {
 impl EncoderTrap {
     /// Handles an encoder error. May write to the output writer.
     /// Returns true only when it is fine to keep going.
-    pub fn trap(&self, encoder: &mut RawEncoder, input: &str, output: &mut ByteWriter) -> bool {
-        fn reencode(encoder: &mut RawEncoder, input: &str, output: &mut ByteWriter,
+    pub fn trap(&self, encoder: &mut RawEncoder, input: &str, output: &mut dyn ByteWriter) -> bool {
+        fn reencode(encoder: &mut RawEncoder, input: &str, output: &mut dyn ByteWriter,
                     trapname: &str) -> bool {
             if encoder.is_ascii_compatible() { // optimization!
                 output.write_bytes(input.as_bytes());

@@ -28,7 +28,7 @@ impl ErrorEncoder {
 impl RawEncoder for ErrorEncoder {
     fn from_self(&self) -> Box<dyn RawEncoder> { ErrorEncoder::new() }
 
-    fn raw_feed(&mut self, input: &str, _output: &mut ByteWriter) -> (usize, Option<CodecError>) {
+    fn raw_feed(&mut self, input: &str, _output: &mut dyn ByteWriter) -> (usize, Option<CodecError>) {
         if let Some(ch) = input.chars().next() {
             (0, Some(CodecError { upto: ch.len_utf8() as isize,
                                   cause: "unrepresentable character".into() }))
@@ -37,7 +37,7 @@ impl RawEncoder for ErrorEncoder {
         }
     }
 
-    fn raw_finish(&mut self, _output: &mut ByteWriter) -> Option<CodecError> {
+    fn raw_finish(&mut self, _output: &mut dyn ByteWriter) -> Option<CodecError> {
         None
     }
 }

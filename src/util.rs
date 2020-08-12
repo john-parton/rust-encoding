@@ -229,7 +229,7 @@ macro_rules! stateful_decoder {
                 )*
             }
 
-            pub fn raw_feed<T>(mut st: State, input: &[u8], output: &mut ::types::StringWriter,
+            pub fn raw_feed<T>(mut st: State, input: &[u8], output: &mut dyn (::types::StringWriter),
                                data: &T) -> (State, usize, Option<::types::CodecError>) {
                 output.writer_hint(input.len());
 
@@ -271,7 +271,7 @@ macro_rules! stateful_decoder {
                 (st, processed, None)
             }
 
-            pub fn raw_finish<T>(mut st: State, output: &mut ::types::StringWriter,
+            pub fn raw_finish<T>(mut st: State, output: &mut dyn (::types::StringWriter),
                                  data: &T) -> (State, Option<::types::CodecError>) {
                 #![allow(unused_mut, unused_variables)]
                 let mut ctx = ::util::StatefulDecoderHelper::new(&[], output, data);
@@ -319,4 +319,3 @@ macro_rules! stateful_decoder {
         }
     );
 }
-

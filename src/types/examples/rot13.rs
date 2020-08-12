@@ -39,7 +39,7 @@ impl RawEncoder for ROT13Encoder {
     }
     fn is_ascii_compatible(&self) -> bool { true }
 
-    fn raw_feed(&mut self, input: &str, output: &mut ByteWriter) -> (usize, Option<CodecError>) {
+    fn raw_feed(&mut self, input: &str, output: &mut dyn ByteWriter) -> (usize, Option<CodecError>) {
         output.writer_hint(input.len());
         for byte in input.bytes() {
             output.write_byte(rotate_byte(byte))
@@ -47,7 +47,7 @@ impl RawEncoder for ROT13Encoder {
         (input.len(), None)
     }
 
-    fn raw_finish(&mut self, _output: &mut ByteWriter) -> Option<CodecError> {
+    fn raw_finish(&mut self, _output: &mut dyn ByteWriter) -> Option<CodecError> {
         None
     }
 }

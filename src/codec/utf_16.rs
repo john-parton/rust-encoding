@@ -49,9 +49,9 @@ impl Encoding for UTF16BEEncoding {
 struct UTF16Encoder;
 
 impl UTF16Encoder {
-    fn raw_feed<F>(&mut self, input: &str, output: &mut ByteWriter,
+    fn raw_feed<F>(&mut self, input: &str, output: &mut dyn ByteWriter,
                    write_two_bytes: F) -> (usize, Option<CodecError>)
-            where F: Fn(&mut ByteWriter, u8, u8) {
+            where F: Fn(&mut dyn ByteWriter, u8, u8) {
         output.writer_hint(input.len() * 2);
 
         for ch in input.chars() {
@@ -84,13 +84,13 @@ impl UTF16LEEncoder {
 
 impl RawEncoder for UTF16LEEncoder {
     fn from_self(&self) -> Box<dyn RawEncoder> { UTF16LEEncoder::new() }
-    fn raw_feed(&mut self, input: &str, output: &mut ByteWriter) -> (usize, Option<CodecError>) {
-        UTF16Encoder.raw_feed(input, output, |output: &mut ByteWriter, msb: u8, lsb: u8| {
+    fn raw_feed(&mut self, input: &str, output: &mut dyn ByteWriter) -> (usize, Option<CodecError>) {
+        UTF16Encoder.raw_feed(input, output, |output: &mut dyn ByteWriter, msb: u8, lsb: u8| {
             output.write_byte(lsb);
             output.write_byte(msb);
         })
     }
-    fn raw_finish(&mut self, _output: &mut ByteWriter) -> Option<CodecError> { None }
+    fn raw_finish(&mut self, _output: &mut dyn ByteWriter) -> Option<CodecError> { None }
 }
 
 /// An encoder for UTF-16 in big endian.
@@ -103,13 +103,13 @@ impl UTF16BEEncoder {
 
 impl RawEncoder for UTF16BEEncoder {
     fn from_self(&self) -> Box<dyn RawEncoder> { UTF16BEEncoder::new() }
-    fn raw_feed(&mut self, input: &str, output: &mut ByteWriter) -> (usize, Option<CodecError>) {
-        UTF16Encoder.raw_feed(input, output, |output: &mut ByteWriter, msb: u8, lsb: u8| {
+    fn raw_feed(&mut self, input: &str, output: &mut dyn ByteWriter) -> (usize, Option<CodecError>) {
+        UTF16Encoder.raw_feed(input, output, |output: &mut dyn ByteWriter, msb: u8, lsb: u8| {
             output.write_byte(msb);
             output.write_byte(lsb);
         })
     }
-    fn raw_finish(&mut self, _output: &mut ByteWriter) -> Option<CodecError> { None }
+    fn raw_finish(&mut self, _output: &mut dyn ByteWriter) -> Option<CodecError> { None }
 }
 
 /// A shared decoder logic for UTF-16.

@@ -65,14 +65,14 @@ impl RawEncoder for UTF8Encoder {
     fn from_self(&self) -> Box<dyn RawEncoder> { UTF8Encoder::new() }
     fn is_ascii_compatible(&self) -> bool { true }
 
-    fn raw_feed(&mut self, input: &str, output: &mut ByteWriter) -> (usize, Option<CodecError>) {
+    fn raw_feed(&mut self, input: &str, output: &mut dyn ByteWriter) -> (usize, Option<CodecError>) {
         let input: &[u8] = input.as_bytes();
         assert!(str::from_utf8(input).is_ok());
         output.write_bytes(input);
         (input.len(), None)
     }
 
-    fn raw_finish(&mut self, _output: &mut ByteWriter) -> Option<CodecError> {
+    fn raw_finish(&mut self, _output: &mut dyn ByteWriter) -> Option<CodecError> {
         None
     }
 }

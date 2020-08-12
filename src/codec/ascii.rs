@@ -35,7 +35,7 @@ impl RawEncoder for ASCIIEncoder {
     fn from_self(&self) -> Box<dyn RawEncoder> { ASCIIEncoder::new() }
     fn is_ascii_compatible(&self) -> bool { true }
 
-    fn raw_feed(&mut self, input: &str, output: &mut ByteWriter) -> (usize, Option<CodecError>) {
+    fn raw_feed(&mut self, input: &str, output: &mut dyn ByteWriter) -> (usize, Option<CodecError>) {
         output.writer_hint(input.len());
 
         match input.as_bytes().iter().position(|&ch| ch >= 0x80) {
@@ -53,7 +53,7 @@ impl RawEncoder for ASCIIEncoder {
         }
     }
 
-    fn raw_finish(&mut self, _output: &mut ByteWriter) -> Option<CodecError> {
+    fn raw_finish(&mut self, _output: &mut dyn ByteWriter) -> Option<CodecError> {
         None
     }
 }
