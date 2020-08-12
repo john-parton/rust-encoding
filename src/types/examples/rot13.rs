@@ -94,8 +94,8 @@ impl RawDecoder for ROT13Decoder {
 
 fn rotate_byte(byte: u8) -> u8 {
     match byte {
-        b'a'...b'm' | b'A'...b'M' => { byte + 13 }
-        b'n'...b'z' | b'N'...b'Z' => { byte - 13 }
+        b'a'..=b'm' | b'A'..=b'M' => { byte + 13 }
+        b'n'..=b'z' | b'N'..=b'Z' => { byte - 13 }
         _ => { byte }
     }
 }
