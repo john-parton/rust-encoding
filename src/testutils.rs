@@ -269,6 +269,22 @@ pub static ASCII_TEXT: &'static str =
      a second language and is an official language of the European Union, many Commonwealth \
      countries and the United Nations, as well as in many world organisations.";
 
+/// Some Latin-1 text to test
+//
+// the first few sentences of the article "An Ghaeilge" from Irish Wikipedia.
+// https://ga.wikipedia.org/wiki/An_Ghaeilge
+pub static IRISH_TEXT: &'static str =
+    "Is ceann de na teangacha Ceilteacha í an Ghaeilge (nó Gaeilge na hÉireann mar a thugtar \
+     uirthi corruair), agus ceann den dtrí cinn de theangacha Ceilteacha ar a dtugtar na \
+     teangacha Gaelacha (.i. an Ghaeilge, Gaeilge na hAlban agus Gaeilge Mhanann) go háirithe. \
+     Labhraítear in Éirinn go príomha í, ach tá cainteoirí Gaeilge ina gcónaí in áiteanna eile ar \
+     fud an domhain. Is í an teanga náisiúnta nó dhúchais agus an phríomhtheanga oifigiúil i \
+     bPoblacht na hÉireann í an Ghaeilge. Tá an Béarla luaite sa Bhunreacht mar theanga oifigiúil \
+     eile. Tá aitheantas oifigiúil aici chomh maith i dTuaisceart Éireann, atá mar chuid den \
+     Ríocht Aontaithe. Ar an 13 Meitheamh 2005 d'aontaigh airí gnóthaí eachtracha an Aontais \
+     Eorpaigh glacadh leis an nGaeilge mar theanga oifigiúil oibre san AE";
+
+
 /// Some Korean text to test.
 //
 // the first paragraphs of the article "Korean Language" from Korean Wikipedia.
