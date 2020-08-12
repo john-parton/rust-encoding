@@ -53,10 +53,10 @@ impl RawEncoder for EUCJPEncoder {
 
         for ((i,j), ch) in input.index_iter() {
             match ch {
-                '\u{0}'...'\u{7f}' => { output.write_byte(ch as u8); }
+                '\u{0}'..='\u{7f}' => { output.write_byte(ch as u8); }
                 '\u{a5}' => { output.write_byte(0x5c); }
                 '\u{203e}' => { output.write_byte(0x7e); }
-                '\u{ff61}'...'\u{ff9f}' => {
+                '\u{ff61}'..='\u{ff9f}' => {
                     output.write_byte(0x8e);
                     output.write_byte((ch as usize - 0xff61 + 0xa1) as u8);
                 }
@@ -121,7 +121,7 @@ stateful_decoder! {
         let lead = lead as u16;
         let trail = trail as u16;
         let index = match (lead, trail) {
-            (0xa1...0xfe, 0xa1...0xfe) => (lead - 0xa1) * 94 + trail - 0xa1,
+            (0xa1..=0xfe, 0xa1..=0xfe) => (lead - 0xa1) * 94 + trail - 0xa1,
             _ => 0xffff,
         };
         index::jis0208::forward(index)
@@ -133,7 +133,7 @@ stateful_decoder! {
         let lead = lead as u16;
         let trail = trail as u16;
         let index = match (lead, trail) {
-            (0xa1...0xfe, 0xa1...0xfe) => (lead - 0xa1) * 94 + trail - 0xa1,
+            (0xa1..=0xfe, 0xa1..=0xfe) => (lead - 0xa1) * 94 + trail - 0xa1,
             _ => 0xffff,
         };
         index::jis0212::forward(index)
@@ -142,32 +142,32 @@ stateful_decoder! {
 initial:
     // euc-jp lead = 0x00
     state S0(ctx: Context) {
-        case b @ 0x00...0x7f => ctx.emit(b as u32);
+        case b @ 0x00..=0x7f => ctx.emit(b as u32);
         case 0x8e => S1(ctx);
         case 0x8f => S2(ctx);
-        case b @ 0xa1...0xfe => S3(ctx, b);
+        case b @ 0xa1..=0xfe => S3(ctx, b);
         case _ => ctx.err("invalid sequence");
     }
 
 transient:
     // euc-jp lead = 0x8e
     state S1(ctx: Context) {
-        case b @ 0xa1...0xdf => ctx.emit(0xff61 + b as u32 - 0xa1);
-        case 0xa1...0xfe => ctx.err("invalid sequence");
+        case b @ 0xa1..=0xdf => ctx.emit(0xff61 + b as u32 - 0xa1);
+        case 0xa1..=0xfe => ctx.err("invalid sequence");
         case _ => ctx.backup_and_err(1, "invalid sequence");
     }
 
     // euc-jp lead = 0x8f
     // JIS X 0201 half-width katakana
     state S2(ctx: Context) {
-        case b @ 0xa1...0xfe => S4(ctx, b);
+        case b @ 0xa1..=0xfe => S4(ctx, b);
         case _ => ctx.backup_and_err(1, "invalid sequence");
     }
 
     // euc-jp lead != 0x00, euc-jp jis0212 flag = unset
     // JIS X 0208 two-byte sequence
     state S3(ctx: Context, lead: u8) {
-        case b @ 0xa1...0xfe => match map_two_0208_bytes(lead, b) {
+        case b @ 0xa1..=0xfe => match map_two_0208_bytes(lead, b) {
             // do NOT backup, we only backup for out-of-range trails.
             0xffff => ctx.err("invalid sequence"),
             ch => ctx.emit(ch as u32)
@@ -178,7 +178,7 @@ transient:
     // euc-jp lead != 0x00, euc-jp jis0212 flag = set
     // JIS X 0212 three-byte sequence
     state S4(ctx: Context, lead: u8) {
-        case b @ 0xa1...0xfe => match map_two_0212_bytes(lead, b) {
+        case b @ 0xa1..=0xfe => match map_two_0212_bytes(lead, b) {
             // do NOT backup, we only backup for out-of-range trails.
             0xffff => ctx.err("invalid sequence"),
             ch => ctx.emit(ch as u32)
@@ -473,10 +473,10 @@ impl RawEncoder for Windows31JEncoder {
 
         for ((i,j), ch) in input.index_iter() {
             match ch {
-                '\u{0}'...'\u{80}' => { output.write_byte(ch as u8); }
+                '\u{0}'..='\u{80}' => { output.write_byte(ch as u8); }
                 '\u{a5}' => { output.write_byte(0x5c); }
                 '\u{203e}' => { output.write_byte(0x7e); }
-                '\u{ff61}'...'\u{ff9f}' => {
+                '\u{ff61}'..='\u{ff9f}' => {
                     output.write_byte((ch as usize - 0xff61 + 0xa1) as u8);
                 }
                 _ => {
@@ -545,10 +545,10 @@ stateful_decoder! {
         let leadoffset = if lead < 0xa0 {0x81} else {0xc1};
         let trailoffset = if trail < 0x7f {0x40} else {0x41};
         let index = match (lead, trail) {
-            (0xf0...0xf9, 0x40...0x7e) | (0xf0...0xf9, 0x80...0xfc) =>
+            (0xf0..=0xf9, 0x40..=0x7e) | (0xf0..=0xf9, 0x80..=0xfc) =>
                 return (0xe000 + (lead - 0xf0) * 188 + trail - trailoffset) as u32,
-            (0x81...0x9f, 0x40...0x7e) | (0x81...0x9f, 0x80...0xfc) |
-            (0xe0...0xfc, 0x40...0x7e) | (0xe0...0xfc, 0x80...0xfc) =>
+            (0x81..=0x9f, 0x40..=0x7e) | (0x81..=0x9f, 0x80..=0xfc) |
+            (0xe0..=0xfc, 0x40..=0x7e) | (0xe0..=0xfc, 0x80..=0xfc) =>
                 (lead - leadoffset) * 188 + trail - trailoffset,
             _ => 0xffff,
         };
@@ -558,9 +558,9 @@ stateful_decoder! {
 initial:
     // shift_jis lead = 0x00
     state S0(ctx: Context) {
-        case b @ 0x00...0x80 => ctx.emit(b as u32);
-        case b @ 0xa1...0xdf => ctx.emit(0xff61 + b as u32 - 0xa1);
-        case b @ 0x81...0x9f, b @ 0xe0...0xfc => S1(ctx, b);
+        case b @ 0x00..=0x80 => ctx.emit(b as u32);
+        case b @ 0xa1..=0xdf => ctx.emit(0xff61 + b as u32 - 0xa1);
+        case b @ 0x81..=0x9f, b @ 0xe0..=0xfc => S1(ctx, b);
         case _ => ctx.err("invalid sequence");
     }
 
@@ -815,10 +815,10 @@ impl RawEncoder for ISO2022JPEncoder {
 
         for ((i,j), ch) in input.index_iter() {
             match ch {
-                '\u{0}'...'\u{7f}' => { ensure_ASCII!(); output.write_byte(ch as u8); }
+                '\u{0}'..='\u{7f}' => { ensure_ASCII!(); output.write_byte(ch as u8); }
                 '\u{a5}' => { ensure_ASCII!(); output.write_byte(0x5c); }
                 '\u{203e}' => { ensure_ASCII!(); output.write_byte(0x7e); }
-                '\u{ff61}'...'\u{ff9f}' => {
+                '\u{ff61}'..='\u{ff9f}' => {
                     ensure_Katakana!();
                     output.write_byte((ch as usize - 0xff61 + 0x21) as u8);
                 }
@@ -887,7 +887,7 @@ stateful_decoder! {
         let lead = lead as u16;
         let trail = trail as u16;
         let index = match (lead, trail) {
-            (0x21...0x7e, 0x21...0x7e) => (lead - 0x21) * 94 + trail - 0x21,
+            (0x21..=0x7e, 0x21..=0x7e) => (lead - 0x21) * 94 + trail - 0x21,
             _ => 0xffff,
         };
         index::jis0208::forward(index)
@@ -899,7 +899,7 @@ stateful_decoder! {
         let lead = lead as u16;
         let trail = trail as u16;
         let index = match (lead, trail) {
-            (0x21...0x7e, 0x21...0x7e) => (lead - 0x21) * 94 + trail - 0x21,
+            (0x21..=0x7e, 0x21..=0x7e) => (lead - 0x21) * 94 + trail - 0x21,
             _ => 0xffff,
         };
         index::jis0212::forward(index)
@@ -909,7 +909,7 @@ initial:
     // iso-2022-jp state = ASCII, iso-2022-jp jis0212 flag = unset, iso-2022-jp lead = 0x00
     state ASCII(ctx: Context) {
         case 0x1b => EscapeStart(ctx);
-        case b @ 0x00...0x7f => ctx.emit(b as u32), ASCII(ctx);
+        case b @ 0x00..=0x7f => ctx.emit(b as u32), ASCII(ctx);
         case _ => ctx.err("invalid sequence"), ASCII(ctx);
         final => ctx.reset();
     }
@@ -934,7 +934,7 @@ checkpoint:
     // iso-2022-jp state = Katakana
     state Katakana(ctx: Context) {
         case 0x1b => EscapeStart(ctx);
-        case b @ 0x21...0x5f => ctx.emit(0xff61 + b as u32 - 0x21), Katakana(ctx);
+        case b @ 0x21..=0x5f => ctx.emit(0xff61 + b as u32 - 0x21), Katakana(ctx);
         case _ => ctx.err("invalid sequence"), Katakana(ctx);
         final => ctx.reset();
     }

@@ -193,7 +193,7 @@ stateful_decoder! {
         let lead = lead as u16;
         let trail = trail as u16;
         let index = match (lead, trail) {
-            (0x81...0xfe, 0x40...0x7e) | (0x81...0xfe, 0x80...0xfe) => {
+            (0x81..=0xfe, 0x40..=0x7e) | (0x81..=0xfe, 0x80..=0xfe) => {
                 let trailoffset = if trail < 0x7f {0x40} else {0x41};
                 (lead - 0x81) * 190 + trail - trailoffset
             }
@@ -214,16 +214,16 @@ stateful_decoder! {
 initial:
     // gb18030 first = 0x00, gb18030 second = 0x00, gb18030 third = 0x00
     state S0(ctx: Context) {
-        case b @ 0x00...0x7f => ctx.emit(b as u32);
+        case b @ 0x00..=0x7f => ctx.emit(b as u32);
         case 0x80 => ctx.emit(0x20ac);
-        case b @ 0x81...0xfe => S1(ctx, b);
+        case b @ 0x81..=0xfe => S1(ctx, b);
         case _ => ctx.err("invalid sequence");
     }
 
 transient:
     // gb18030 first != 0x00, gb18030 second = 0x00, gb18030 third = 0x00
     state S1(ctx: Context, first: u8) {
-        case b @ 0x30...0x39 => S2(ctx, first, b);
+        case b @ 0x30..=0x39 => S2(ctx, first, b);
         case b => match map_two_bytes(first, b) {
             0xffff => ctx.backup_and_err(1, "invalid sequence"), // unconditional
             ch => ctx.emit(ch)
@@ -232,13 +232,13 @@ transient:
 
     // gb18030 first != 0x00, gb18030 second != 0x00, gb18030 third = 0x00
     state S2(ctx: Context, first: u8, second: u8) {
-        case b @ 0x81...0xfe => S3(ctx, first, second, b);
+        case b @ 0x81..=0xfe => S3(ctx, first, second, b);
         case _ => ctx.backup_and_err(2, "invalid sequence");
     }
 
     // gb18030 first != 0x00, gb18030 second != 0x00, gb18030 third != 0x00
     state S3(ctx: Context, first: u8, second: u8, third: u8) {
-        case b @ 0x30...0x39 => match map_four_bytes(first, second, third, b) {
+        case b @ 0x30..=0x39 => match map_four_bytes(first, second, third, b) {
             0xffffffff => ctx.backup_and_err(3, "invalid sequence"), // unconditional
             ch => ctx.emit(ch)
         };
@@ -584,7 +584,7 @@ stateful_decoder! {
         let lead = lead as u16;
         let trail = trail as u16;
         let index = match (lead, trail) {
-            (0x20...0x7f, 0x21...0x7e) => (lead - 1) * 190 + (trail + 0x3f),
+            (0x20..=0x7f, 0x21..=0x7e) => (lead - 1) * 190 + (trail + 0x3f),
             _ => 0xffff,
         };
         index::gb18030::forward(index)
@@ -594,7 +594,7 @@ initial:
     // hz-gb-2312 flag = unset, hz-gb-2312 lead = 0x00
     state A0(ctx: Context) {
         case 0x7e => A1(ctx);
-        case b @ 0x00...0x7f => ctx.emit(b as u32);
+        case b @ 0x00..=0x7f => ctx.emit(b as u32);
         case _ => ctx.err("invalid sequence");
         final => ctx.reset();
     }
@@ -603,7 +603,7 @@ checkpoint:
     // hz-gb-2312 flag = set, hz-gb-2312 lead = 0x00
     state B0(ctx: Context) {
         case 0x7e => B1(ctx);
-        case b @ 0x20...0x7f => B2(ctx, b);
+        case b @ 0x20..=0x7f => B2(ctx, b);
         case 0x0a => ctx.err("invalid sequence"); // error *and* reset
         case _ => ctx.err("invalid sequence"), B0(ctx);
         final => ctx.reset();

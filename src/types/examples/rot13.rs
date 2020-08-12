@@ -80,7 +80,7 @@ impl RawDecoder for ROT13Decoder {
         };
         for ch in string.chars() {
             match ch {
-                'a'...'z' | 'A'...'Z' => { output.write_char(rotate_byte(ch as u8) as char) },
+                'a'..='z' | 'A'..='Z' => { output.write_char(rotate_byte(ch as u8) as char) },
                 _ => { output.write_char(ch) }
             }
         }

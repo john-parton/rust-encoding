@@ -112,7 +112,7 @@ stateful_decoder! {
         let lead = lead as u16;
         let trail = trail as u16;
         let index = match (lead, trail) {
-            (0x81...0xfe, 0x40...0x7e) | (0x81...0xfe, 0xa1...0xfe) => {
+            (0x81..=0xfe, 0x40..=0x7e) | (0x81..=0xfe, 0xa1..=0xfe) => {
                 let trailoffset = if trail < 0x7f {0x40} else {0x62};
                 (lead - 0x81) * 157 + trail - trailoffset
             }
@@ -124,8 +124,8 @@ stateful_decoder! {
 initial:
     // big5 lead = 0x00
     state S0(ctx: Context) {
-        case b @ 0x00...0x7f => ctx.emit(b as u32);
-        case b @ 0x81...0xfe => S1(ctx, b);
+        case b @ 0x00..=0x7f => ctx.emit(b as u32);
+        case b @ 0x81..=0xfe => S1(ctx, b);
         case _ => ctx.err("invalid sequence");
     }
 
