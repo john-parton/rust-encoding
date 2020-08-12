@@ -38,7 +38,7 @@ def read_index(opts, crate, name, comments):
     os.makedirs(opts.cache_dir, exist_ok=True)
 
     cached_path = opts.cache_dir / f'{name}.txt'
-    
+
     if not opts.flush_cache and cached_path.exists():
         print('(cached)', end='', file=sys.stderr)
     else:
@@ -402,11 +402,11 @@ def generate_multi_byte_index(opts, crate, name):
                |    let c = code % 190;
                |    if c >= 96 {
                |        let dr = match r {
-               |            0...43 => 0,
-               |            44...46 => return X,
-               |            47...71 => 3,
+               |            0..=43 => 0,
+               |            44..=46 => return X,
+               |            47..=71 => 3,
                |            72 => return X,
-               |            73...124 => 4,
+               |            73..=124 => 4,
                |            _ => return X,
                |        };
                |        (r - dr) * (190 - 96) + (c - 96)
