@@ -27,7 +27,7 @@ pub struct Windows949Encoding;
 impl Encoding for Windows949Encoding {
     fn name(&self) -> &'static str { "windows-949" }
     fn whatwg_name(&self) -> Option<&'static str> { Some("euc-kr") } // WHATWG compatibility
-    fn raw_encoder(&self) -> Box<RawEncoder> { Windows949Encoder::new() }
+    fn raw_encoder(&self) -> Box<dyn RawEncoder> { Windows949Encoder::new() }
     fn raw_decoder(&self) -> Box<RawDecoder> { Windows949Decoder::new() }
 }
 
@@ -36,11 +36,11 @@ impl Encoding for Windows949Encoding {
 pub struct Windows949Encoder;
 
 impl Windows949Encoder {
-    pub fn new() -> Box<RawEncoder> { Box::new(Windows949Encoder) }
+    pub fn new() -> Box<dyn RawEncoder> { Box::new(Windows949Encoder) }
 }
 
 impl RawEncoder for Windows949Encoder {
-    fn from_self(&self) -> Box<RawEncoder> { Windows949Encoder::new() }
+    fn from_self(&self) -> Box<dyn RawEncoder> { Windows949Encoder::new() }
     fn is_ascii_compatible(&self) -> bool { true }
 
     fn raw_feed(&mut self, input: &str, output: &mut ByteWriter) -> (usize, Option<CodecError>) {

@@ -40,7 +40,7 @@ pub struct GB18030Encoding;
 impl Encoding for GB18030Encoding {
     fn name(&self) -> &'static str { "gb18030" }
     fn whatwg_name(&self) -> Option<&'static str> { Some("gb18030") }
-    fn raw_encoder(&self) -> Box<RawEncoder> { GB18030Encoder::new() }
+    fn raw_encoder(&self) -> Box<dyn RawEncoder> { GB18030Encoder::new() }
     fn raw_decoder(&self) -> Box<RawDecoder> { GB18030Decoder::new() }
 }
 
@@ -49,11 +49,11 @@ impl Encoding for GB18030Encoding {
 pub struct GB18030Encoder;
 
 impl GB18030Encoder {
-    pub fn new() -> Box<RawEncoder> { Box::new(GB18030Encoder) }
+    pub fn new() -> Box<dyn RawEncoder> { Box::new(GB18030Encoder) }
 }
 
 impl RawEncoder for GB18030Encoder {
-    fn from_self(&self) -> Box<RawEncoder> { GB18030Encoder::new() }
+    fn from_self(&self) -> Box<dyn RawEncoder> { GB18030Encoder::new() }
     fn is_ascii_compatible(&self) -> bool { true }
     fn raw_feed(&mut self, input: &str, output: &mut ByteWriter) -> (usize, Option<CodecError>) {
         GBEncoder.raw_feed(input, output, false)
@@ -84,7 +84,7 @@ pub struct GBKEncoding;
 impl Encoding for GBKEncoding {
     fn name(&self) -> &'static str { "gbk" }
     fn whatwg_name(&self) -> Option<&'static str> { Some("gbk") }
-    fn raw_encoder(&self) -> Box<RawEncoder> { GBKEncoder::new() }
+    fn raw_encoder(&self) -> Box<dyn RawEncoder> { GBKEncoder::new() }
     fn raw_decoder(&self) -> Box<RawDecoder> { GB18030Decoder::new() }
 }
 
@@ -93,11 +93,11 @@ impl Encoding for GBKEncoding {
 pub struct GBKEncoder;
 
 impl GBKEncoder {
-    pub fn new() -> Box<RawEncoder> { Box::new(GBKEncoder) }
+    pub fn new() -> Box<dyn RawEncoder> { Box::new(GBKEncoder) }
 }
 
 impl RawEncoder for GBKEncoder {
-    fn from_self(&self) -> Box<RawEncoder> { GBKEncoder::new() }
+    fn from_self(&self) -> Box<dyn RawEncoder> { GBKEncoder::new() }
     fn is_ascii_compatible(&self) -> bool { true }
     fn raw_feed(&mut self, input: &str, output: &mut ByteWriter) -> (usize, Option<CodecError>) {
         GBEncoder.raw_feed(input, output, true)
@@ -479,7 +479,7 @@ pub struct HZEncoding;
 impl Encoding for HZEncoding {
     fn name(&self) -> &'static str { "hz" }
     fn whatwg_name(&self) -> Option<&'static str> { None }
-    fn raw_encoder(&self) -> Box<RawEncoder> { HZEncoder::new() }
+    fn raw_encoder(&self) -> Box<dyn RawEncoder> { HZEncoder::new() }
     fn raw_decoder(&self) -> Box<RawDecoder> { HZDecoder::new() }
 }
 
@@ -490,11 +490,11 @@ pub struct HZEncoder {
 }
 
 impl HZEncoder {
-    pub fn new() -> Box<RawEncoder> { Box::new(HZEncoder { escaped: false }) }
+    pub fn new() -> Box<dyn RawEncoder> { Box::new(HZEncoder { escaped: false }) }
 }
 
 impl RawEncoder for HZEncoder {
-    fn from_self(&self) -> Box<RawEncoder> { HZEncoder::new() }
+    fn from_self(&self) -> Box<dyn RawEncoder> { HZEncoder::new() }
     fn is_ascii_compatible(&self) -> bool { false }
 
     fn raw_feed(&mut self, input: &str, output: &mut ByteWriter) -> (usize, Option<CodecError>) {

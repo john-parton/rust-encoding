@@ -134,7 +134,7 @@ impl StringWriter for String {
 /// This is a lower level interface, and normally `Encoding::encode` should be used instead.
 pub trait RawEncoder: Send + 'static {
     /// Creates a fresh `RawEncoder` instance which parameters are same as `self`.
-    fn from_self(&self) -> Box<RawEncoder>;
+    fn from_self(&self) -> Box<dyn RawEncoder>;
 
     /// Returns true if this encoding is compatible to ASCII,
     /// i.e. U+0000 through U+007F always map to bytes 00 through 7F and nothing else.
@@ -193,7 +193,7 @@ pub trait Encoding {
     fn whatwg_name(&self) -> Option<&'static str> { None }
 
     /// Creates a new encoder.
-    fn raw_encoder(&self) -> Box<RawEncoder>;
+    fn raw_encoder(&self) -> Box<dyn RawEncoder>;
 
     /// Creates a new decoder.
     fn raw_decoder(&self) -> Box<RawDecoder>;

@@ -30,7 +30,7 @@ pub struct BigFive2003Encoding;
 impl Encoding for BigFive2003Encoding {
     fn name(&self) -> &'static str { "big5-2003" }
     fn whatwg_name(&self) -> Option<&'static str> { Some("big5") } // WHATWG compatibility
-    fn raw_encoder(&self) -> Box<RawEncoder> { BigFive2003Encoder::new() }
+    fn raw_encoder(&self) -> Box<dyn RawEncoder> { BigFive2003Encoder::new() }
     fn raw_decoder(&self) -> Box<RawDecoder> { BigFive2003HKSCS2008Decoder::new() }
 }
 
@@ -39,11 +39,11 @@ impl Encoding for BigFive2003Encoding {
 pub struct BigFive2003Encoder;
 
 impl BigFive2003Encoder {
-    pub fn new() -> Box<RawEncoder> { Box::new(BigFive2003Encoder) }
+    pub fn new() -> Box<dyn RawEncoder> { Box::new(BigFive2003Encoder) }
 }
 
 impl RawEncoder for BigFive2003Encoder {
-    fn from_self(&self) -> Box<RawEncoder> { BigFive2003Encoder::new() }
+    fn from_self(&self) -> Box<dyn RawEncoder> { BigFive2003Encoder::new() }
     fn is_ascii_compatible(&self) -> bool { true }
 
     fn raw_feed(&mut self, input: &str, output: &mut ByteWriter) -> (usize, Option<CodecError>) {

@@ -19,7 +19,7 @@ mod tests {
     // `e*ee*ease*l` where `*` is substituted by `prepend`) and prohibits `prohibit` character.
     struct MyEncoder { flag: bool, prohibit: char, prepend: &'static str, toggle: bool }
     impl RawEncoder for MyEncoder {
-        fn from_self(&self) -> Box<RawEncoder> {
+        fn from_self(&self) -> Box<dyn RawEncoder> {
             Box::new(MyEncoder { flag: self.flag,
                                  prohibit: self.prohibit,
                                  prepend: self.prepend,
@@ -50,7 +50,7 @@ mod tests {
     struct MyEncoding { flag: bool, prohibit: char, prepend: &'static str }
     impl Encoding for MyEncoding {
         fn name(&self) -> &'static str { "my encoding" }
-        fn raw_encoder(&self) -> Box<RawEncoder> {
+        fn raw_encoder(&self) -> Box<dyn RawEncoder> {
             Box::new(MyEncoder { flag: self.flag,
                                  prohibit: self.prohibit,
                                  prepend: self.prepend,

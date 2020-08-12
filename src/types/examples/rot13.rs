@@ -20,7 +20,7 @@ pub struct ROT13Encoding;
 impl Encoding for ROT13Encoding {
     fn name(&self) -> &'static str { "rot13" }
     fn whatwg_name(&self) -> Option<&'static str> { None }
-    fn raw_encoder(&self) -> Box<RawEncoder> { ROT13Encoder::new() }
+    fn raw_encoder(&self) -> Box<dyn RawEncoder> { ROT13Encoder::new() }
     fn raw_decoder(&self) -> Box<RawDecoder> { ROT13Decoder::new() }
 }
 
@@ -28,13 +28,13 @@ impl Encoding for ROT13Encoding {
 pub struct ROT13Encoder;
 
 impl ROT13Encoder {
-    pub fn new() -> Box<RawEncoder> {
+    pub fn new() -> Box<dyn RawEncoder> {
         Box::new(ROT13Encoder)
     }
 }
 
 impl RawEncoder for ROT13Encoder {
-    fn from_self(&self) -> Box<RawEncoder> {
+    fn from_self(&self) -> Box<dyn RawEncoder> {
         ROT13Encoder::new()
     }
     fn is_ascii_compatible(&self) -> bool { true }

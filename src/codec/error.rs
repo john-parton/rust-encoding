@@ -13,7 +13,7 @@ pub struct ErrorEncoding;
 
 impl Encoding for ErrorEncoding {
     fn name(&self) -> &'static str { "error" }
-    fn raw_encoder(&self) -> Box<RawEncoder> { ErrorEncoder::new() }
+    fn raw_encoder(&self) -> Box<dyn RawEncoder> { ErrorEncoder::new() }
     fn raw_decoder(&self) -> Box<RawDecoder> { ErrorDecoder::new() }
 }
 
@@ -22,11 +22,11 @@ impl Encoding for ErrorEncoding {
 pub struct ErrorEncoder;
 
 impl ErrorEncoder {
-    pub fn new() -> Box<RawEncoder> { Box::new(ErrorEncoder) }
+    pub fn new() -> Box<dyn RawEncoder> { Box::new(ErrorEncoder) }
 }
 
 impl RawEncoder for ErrorEncoder {
-    fn from_self(&self) -> Box<RawEncoder> { ErrorEncoder::new() }
+    fn from_self(&self) -> Box<dyn RawEncoder> { ErrorEncoder::new() }
 
     fn raw_feed(&mut self, input: &str, _output: &mut ByteWriter) -> (usize, Option<CodecError>) {
         if let Some(ch) = input.chars().next() {

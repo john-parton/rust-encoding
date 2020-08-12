@@ -22,7 +22,7 @@ pub struct UTF16LEEncoding;
 impl Encoding for UTF16LEEncoding {
     fn name(&self) -> &'static str { "utf-16le" }
     fn whatwg_name(&self) -> Option<&'static str> { Some("utf-16le") }
-    fn raw_encoder(&self) -> Box<RawEncoder> { UTF16LEEncoder::new() }
+    fn raw_encoder(&self) -> Box<dyn RawEncoder> { UTF16LEEncoder::new() }
     fn raw_decoder(&self) -> Box<RawDecoder> { UTF16LEDecoder::new() }
 }
 
@@ -40,7 +40,7 @@ pub struct UTF16BEEncoding;
 impl Encoding for UTF16BEEncoding {
     fn name(&self) -> &'static str { "utf-16be" }
     fn whatwg_name(&self) -> Option<&'static str> { Some("utf-16be") }
-    fn raw_encoder(&self) -> Box<RawEncoder> { UTF16BEEncoder::new() }
+    fn raw_encoder(&self) -> Box<dyn RawEncoder> { UTF16BEEncoder::new() }
     fn raw_decoder(&self) -> Box<RawDecoder> { UTF16BEDecoder::new() }
 }
 
@@ -79,11 +79,11 @@ impl UTF16Encoder {
 pub struct UTF16LEEncoder;
 
 impl UTF16LEEncoder {
-    fn new() -> Box<RawEncoder> { Box::new(UTF16LEEncoder) }
+    fn new() -> Box<dyn RawEncoder> { Box::new(UTF16LEEncoder) }
 }
 
 impl RawEncoder for UTF16LEEncoder {
-    fn from_self(&self) -> Box<RawEncoder> { UTF16LEEncoder::new() }
+    fn from_self(&self) -> Box<dyn RawEncoder> { UTF16LEEncoder::new() }
     fn raw_feed(&mut self, input: &str, output: &mut ByteWriter) -> (usize, Option<CodecError>) {
         UTF16Encoder.raw_feed(input, output, |output: &mut ByteWriter, msb: u8, lsb: u8| {
             output.write_byte(lsb);
@@ -98,11 +98,11 @@ impl RawEncoder for UTF16LEEncoder {
 pub struct UTF16BEEncoder;
 
 impl UTF16BEEncoder {
-    fn new() -> Box<RawEncoder> { Box::new(UTF16BEEncoder) }
+    fn new() -> Box<dyn RawEncoder> { Box::new(UTF16BEEncoder) }
 }
 
 impl RawEncoder for UTF16BEEncoder {
-    fn from_self(&self) -> Box<RawEncoder> { UTF16BEEncoder::new() }
+    fn from_self(&self) -> Box<dyn RawEncoder> { UTF16BEEncoder::new() }
     fn raw_feed(&mut self, input: &str, output: &mut ByteWriter) -> (usize, Option<CodecError>) {
         UTF16Encoder.raw_feed(input, output, |output: &mut ByteWriter, msb: u8, lsb: u8| {
             output.write_byte(msb);

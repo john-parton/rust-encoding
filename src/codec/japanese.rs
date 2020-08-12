@@ -32,7 +32,7 @@ pub struct EUCJPEncoding;
 impl Encoding for EUCJPEncoding {
     fn name(&self) -> &'static str { "euc-jp" }
     fn whatwg_name(&self) -> Option<&'static str> { Some("euc-jp") }
-    fn raw_encoder(&self) -> Box<RawEncoder> { EUCJPEncoder::new() }
+    fn raw_encoder(&self) -> Box<dyn RawEncoder> { EUCJPEncoder::new() }
     fn raw_decoder(&self) -> Box<RawDecoder> { EUCJP0212Decoder::new() }
 }
 
@@ -41,11 +41,11 @@ impl Encoding for EUCJPEncoding {
 pub struct EUCJPEncoder;
 
 impl EUCJPEncoder {
-    pub fn new() -> Box<RawEncoder> { Box::new(EUCJPEncoder) }
+    pub fn new() -> Box<dyn RawEncoder> { Box::new(EUCJPEncoder) }
 }
 
 impl RawEncoder for EUCJPEncoder {
-    fn from_self(&self) -> Box<RawEncoder> { EUCJPEncoder::new() }
+    fn from_self(&self) -> Box<dyn RawEncoder> { EUCJPEncoder::new() }
     fn is_ascii_compatible(&self) -> bool { true }
 
     fn raw_feed(&mut self, input: &str, output: &mut ByteWriter) -> (usize, Option<CodecError>) {
@@ -452,7 +452,7 @@ pub struct Windows31JEncoding;
 impl Encoding for Windows31JEncoding {
     fn name(&self) -> &'static str { "windows-31j" }
     fn whatwg_name(&self) -> Option<&'static str> { Some("shift_jis") } // WHATWG compatibility
-    fn raw_encoder(&self) -> Box<RawEncoder> { Windows31JEncoder::new() }
+    fn raw_encoder(&self) -> Box<dyn RawEncoder> { Windows31JEncoder::new() }
     fn raw_decoder(&self) -> Box<RawDecoder> { Windows31JDecoder::new() }
 }
 
@@ -461,11 +461,11 @@ impl Encoding for Windows31JEncoding {
 pub struct Windows31JEncoder;
 
 impl Windows31JEncoder {
-    pub fn new() -> Box<RawEncoder> { Box::new(Windows31JEncoder) }
+    pub fn new() -> Box<dyn RawEncoder> { Box::new(Windows31JEncoder) }
 }
 
 impl RawEncoder for Windows31JEncoder {
-    fn from_self(&self) -> Box<RawEncoder> { Windows31JEncoder::new() }
+    fn from_self(&self) -> Box<dyn RawEncoder> { Windows31JEncoder::new() }
     fn is_ascii_compatible(&self) -> bool { true }
 
     fn raw_feed(&mut self, input: &str, output: &mut ByteWriter) -> (usize, Option<CodecError>) {
@@ -774,7 +774,7 @@ pub struct ISO2022JPEncoding;
 impl Encoding for ISO2022JPEncoding {
     fn name(&self) -> &'static str { "iso-2022-jp" }
     fn whatwg_name(&self) -> Option<&'static str> { Some("iso-2022-jp") }
-    fn raw_encoder(&self) -> Box<RawEncoder> { ISO2022JPEncoder::new() }
+    fn raw_encoder(&self) -> Box<dyn RawEncoder> { ISO2022JPEncoder::new() }
     fn raw_decoder(&self) -> Box<RawDecoder> { ISO2022JPDecoder::new() }
 }
 
@@ -792,11 +792,11 @@ pub struct ISO2022JPEncoder {
 }
 
 impl ISO2022JPEncoder {
-    pub fn new() -> Box<RawEncoder> { Box::new(ISO2022JPEncoder { st: ASCII }) }
+    pub fn new() -> Box<dyn RawEncoder> { Box::new(ISO2022JPEncoder { st: ASCII }) }
 }
 
 impl RawEncoder for ISO2022JPEncoder {
-    fn from_self(&self) -> Box<RawEncoder> { ISO2022JPEncoder::new() }
+    fn from_self(&self) -> Box<dyn RawEncoder> { ISO2022JPEncoder::new() }
     fn is_ascii_compatible(&self) -> bool { true }
 
     fn raw_feed(&mut self, input: &str, output: &mut ByteWriter) -> (usize, Option<CodecError>) {

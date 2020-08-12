@@ -19,7 +19,7 @@ pub struct ASCIIEncoding;
 
 impl Encoding for ASCIIEncoding {
     fn name(&self) -> &'static str { "ascii" }
-    fn raw_encoder(&self) -> Box<RawEncoder> { ASCIIEncoder::new() }
+    fn raw_encoder(&self) -> Box<dyn RawEncoder> { ASCIIEncoder::new() }
     fn raw_decoder(&self) -> Box<RawDecoder> { ASCIIDecoder::new() }
 }
 
@@ -28,11 +28,11 @@ impl Encoding for ASCIIEncoding {
 pub struct ASCIIEncoder;
 
 impl ASCIIEncoder {
-    pub fn new() -> Box<RawEncoder> { Box::new(ASCIIEncoder) }
+    pub fn new() -> Box<dyn RawEncoder> { Box::new(ASCIIEncoder) }
 }
 
 impl RawEncoder for ASCIIEncoder {
-    fn from_self(&self) -> Box<RawEncoder> { ASCIIEncoder::new() }
+    fn from_self(&self) -> Box<dyn RawEncoder> { ASCIIEncoder::new() }
     fn is_ascii_compatible(&self) -> bool { true }
 
     fn raw_feed(&mut self, input: &str, output: &mut ByteWriter) -> (usize, Option<CodecError>) {

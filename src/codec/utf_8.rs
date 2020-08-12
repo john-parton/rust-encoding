@@ -49,7 +49,7 @@ pub struct UTF8Encoding;
 impl Encoding for UTF8Encoding {
     fn name(&self) -> &'static str { "utf-8" }
     fn whatwg_name(&self) -> Option<&'static str> { Some("utf-8") }
-    fn raw_encoder(&self) -> Box<RawEncoder> { UTF8Encoder::new() }
+    fn raw_encoder(&self) -> Box<dyn RawEncoder> { UTF8Encoder::new() }
     fn raw_decoder(&self) -> Box<RawDecoder> { UTF8Decoder::new() }
 }
 
@@ -58,11 +58,11 @@ impl Encoding for UTF8Encoding {
 pub struct UTF8Encoder;
 
 impl UTF8Encoder {
-    pub fn new() -> Box<RawEncoder> { Box::new(UTF8Encoder) }
+    pub fn new() -> Box<dyn RawEncoder> { Box::new(UTF8Encoder) }
 }
 
 impl RawEncoder for UTF8Encoder {
-    fn from_self(&self) -> Box<RawEncoder> { UTF8Encoder::new() }
+    fn from_self(&self) -> Box<dyn RawEncoder> { UTF8Encoder::new() }
     fn is_ascii_compatible(&self) -> bool { true }
 
     fn raw_feed(&mut self, input: &str, output: &mut ByteWriter) -> (usize, Option<CodecError>) {
