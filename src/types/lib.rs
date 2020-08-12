@@ -179,7 +179,7 @@ pub trait RawDecoder: Send + 'static {
 
 /// A trait object using dynamic dispatch which is a sendable reference to the encoding,
 /// for code where the encoding is not known at compile-time.
-pub type EncodingRef = &'static (Encoding + Send + Sync);
+pub type EncodingRef = &'static (dyn Encoding + Send + Sync);
 
 /// Character encoding.
 pub trait Encoding {
