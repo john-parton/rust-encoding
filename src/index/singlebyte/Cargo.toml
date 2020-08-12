@@ -10,6 +10,9 @@ license = "CC0-1.0"
 
 edition = "2018"
 
+[dependencies]
+phf = { version = "0.8", features = ["macros"] }
+
 [lib]
 name = "encoding_index_singlebyte"
 path = "lib.rs"

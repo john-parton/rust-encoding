@@ -25,6 +25,9 @@ no-optimized-legacy-encoding = [
 	"encoding-index-tradchinese/no-optimized-legacy-encoding",
 ]
 
+[dependencies]
+phf = { version = "0.8", features = ["macros"] }
+
 [dependencies.encoding-types]
 version = "0.2"
 path = "src/types"
