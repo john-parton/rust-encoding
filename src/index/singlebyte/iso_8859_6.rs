@@ -5,68 +5,185 @@
 //
 // Identifier: 85bb7b5c2dc75975afebe5743935ba4ed5a09c1e9e34e9bfb2ff80293f5d8bbc
 // Date: 2018-01-06
-
-#[allow(dead_code)] const X: u16 = 0xffff;
-
-const FORWARD_TABLE: &'static [u16] = &[
-    128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142,
-    143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157,
-    158, 159, 160, X, X, X, 164, X, X, X, X, X, X, X, 1548, 173, X, X, X, X, X,
-    X, X, X, X, X, X, X, X, 1563, X, X, X, 1567, X, 1569, 1570, 1571, 1572,
-    1573, 1574, 1575, 1576, 1577, 1578, 1579, 1580, 1581, 1582, 1583, 1584,
-    1585, 1586, 1587, 1588, 1589, 1590, 1591, 1592, 1593, 1594, X, X, X, X, X,
-    1600, 1601, 1602, 1603, 1604, 1605, 1606, 1607, 1608, 1609, 1610, 1611,
-    1612, 1613, 1614, 1615, 1616, 1617, 1618, X, X, X, X, X, X, X, X, X, X, X,
-    X, X,
-]; // 128 entries
-
-/// Returns the index code point for pointer `code` in this index.
 #[inline]
-pub fn forward(code: u8) -> u16 {
-    FORWARD_TABLE[(code - 0x80) as usize]
-}
-
-#[cfg(not(feature = "no-optimized-legacy-encoding"))]
-const BACKWARD_TABLE_LOWER: &'static [u8] = &[
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234,
-    235, 236, 237, 238, 239, 240, 241, 242, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206,
-    207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 0, 0, 0, 0, 0,
-    128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142,
-    143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157,
-    158, 159, 160, 0, 0, 0, 164, 0, 0, 0, 0, 0, 0, 0, 0, 173, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 172, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 187, 0, 0, 0, 191,
-]; // 179 entries
-
-#[cfg(not(feature = "no-optimized-legacy-encoding"))]
-const BACKWARD_TABLE_UPPER: &'static [u16] = &[
-    0, 0, 0, 0, 95, 127, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    147, 63, 32,
-]; // 51 entries
-
-/// Returns the index pointer for code point `code` in this index.
-#[inline]
-#[cfg(not(feature = "no-optimized-legacy-encoding"))]
-pub fn backward(code: u32) -> u8 {
-    let offset = (code >> 5) as usize;
-    let offset = if offset < 51 {BACKWARD_TABLE_UPPER[offset] as usize} else {0};
-    BACKWARD_TABLE_LOWER[offset + ((code & 31) as usize)]
-}
-
-/// Returns the index pointer for code point `code` in this index.
-#[cfg(feature = "no-optimized-legacy-encoding")]
-pub fn backward(code: u32) -> u8 {
-    if code > 1618 || ((0x3000004u32 >> (code >> 6)) & 1) == 0 { return 0; }
-    let code = code as u16;
-    for i in 0..0x80 {
-        if FORWARD_TABLE[i as usize] == code { return 0x80 + i; }
+pub fn forward(code: u8) -> Option<u16> {
+    match code {
+        0 => Some(128),
+        1 => Some(129),
+        2 => Some(130),
+        3 => Some(131),
+        4 => Some(132),
+        5 => Some(133),
+        6 => Some(134),
+        7 => Some(135),
+        8 => Some(136),
+        9 => Some(137),
+        10 => Some(138),
+        11 => Some(139),
+        12 => Some(140),
+        13 => Some(141),
+        14 => Some(142),
+        15 => Some(143),
+        16 => Some(144),
+        17 => Some(145),
+        18 => Some(146),
+        19 => Some(147),
+        20 => Some(148),
+        21 => Some(149),
+        22 => Some(150),
+        23 => Some(151),
+        24 => Some(152),
+        25 => Some(153),
+        26 => Some(154),
+        27 => Some(155),
+        28 => Some(156),
+        29 => Some(157),
+        30 => Some(158),
+        31 => Some(159),
+        32 => Some(160),
+        36 => Some(164),
+        44 => Some(1548),
+        45 => Some(173),
+        59 => Some(1563),
+        63 => Some(1567),
+        65 => Some(1569),
+        66 => Some(1570),
+        67 => Some(1571),
+        68 => Some(1572),
+        69 => Some(1573),
+        70 => Some(1574),
+        71 => Some(1575),
+        72 => Some(1576),
+        73 => Some(1577),
+        74 => Some(1578),
+        75 => Some(1579),
+        76 => Some(1580),
+        77 => Some(1581),
+        78 => Some(1582),
+        79 => Some(1583),
+        80 => Some(1584),
+        81 => Some(1585),
+        82 => Some(1586),
+        83 => Some(1587),
+        84 => Some(1588),
+        85 => Some(1589),
+        86 => Some(1590),
+        87 => Some(1591),
+        88 => Some(1592),
+        89 => Some(1593),
+        90 => Some(1594),
+        96 => Some(1600),
+        97 => Some(1601),
+        98 => Some(1602),
+        99 => Some(1603),
+        100 => Some(1604),
+        101 => Some(1605),
+        102 => Some(1606),
+        103 => Some(1607),
+        104 => Some(1608),
+        105 => Some(1609),
+        106 => Some(1610),
+        107 => Some(1611),
+        108 => Some(1612),
+        109 => Some(1613),
+        110 => Some(1614),
+        111 => Some(1615),
+        112 => Some(1616),
+        113 => Some(1617),
+        114 => Some(1618),
+        _ => None
     }
-    0
+}
+
+#[inline]
+pub fn backward(code: u32) -> Option<u8> {
+    match code {
+        128 => Some(0),
+        129 => Some(1),
+        130 => Some(2),
+        131 => Some(3),
+        132 => Some(4),
+        133 => Some(5),
+        134 => Some(6),
+        135 => Some(7),
+        136 => Some(8),
+        137 => Some(9),
+        138 => Some(10),
+        139 => Some(11),
+        140 => Some(12),
+        141 => Some(13),
+        142 => Some(14),
+        143 => Some(15),
+        144 => Some(16),
+        145 => Some(17),
+        146 => Some(18),
+        147 => Some(19),
+        148 => Some(20),
+        149 => Some(21),
+        150 => Some(22),
+        151 => Some(23),
+        152 => Some(24),
+        153 => Some(25),
+        154 => Some(26),
+        155 => Some(27),
+        156 => Some(28),
+        157 => Some(29),
+        158 => Some(30),
+        159 => Some(31),
+        160 => Some(32),
+        164 => Some(36),
+        1548 => Some(44),
+        173 => Some(45),
+        1563 => Some(59),
+        1567 => Some(63),
+        1569 => Some(65),
+        1570 => Some(66),
+        1571 => Some(67),
+        1572 => Some(68),
+        1573 => Some(69),
+        1574 => Some(70),
+        1575 => Some(71),
+        1576 => Some(72),
+        1577 => Some(73),
+        1578 => Some(74),
+        1579 => Some(75),
+        1580 => Some(76),
+        1581 => Some(77),
+        1582 => Some(78),
+        1583 => Some(79),
+        1584 => Some(80),
+        1585 => Some(81),
+        1586 => Some(82),
+        1587 => Some(83),
+        1588 => Some(84),
+        1589 => Some(85),
+        1590 => Some(86),
+        1591 => Some(87),
+        1592 => Some(88),
+        1593 => Some(89),
+        1594 => Some(90),
+        1600 => Some(96),
+        1601 => Some(97),
+        1602 => Some(98),
+        1603 => Some(99),
+        1604 => Some(100),
+        1605 => Some(101),
+        1606 => Some(102),
+        1607 => Some(103),
+        1608 => Some(104),
+        1609 => Some(105),
+        1610 => Some(106),
+        1611 => Some(107),
+        1612 => Some(108),
+        1613 => Some(109),
+        1614 => Some(110),
+        1615 => Some(111),
+        1616 => Some(112),
+        1617 => Some(113),
+        1618 => Some(114),
+        _ => None
+    }
 }
 
 #[cfg(test)]
-single_byte_tests! {
-}
+single_byte_tests! {}

@@ -30,16 +30,16 @@ impl Encoding for EncoderOnlyUTF8Encoding {
 /// Algorithmic mapping for `x-user-defined` encoding.
 pub mod x_user_defined {
     #[inline]
-    pub fn forward(code: u8) -> u16 {
-        0xf700 | (code as u16)
+    pub fn forward(code: u8) -> Option<u16> {
+        Some(0xf700 | (code as u16))
     }
 
     #[inline]
-    pub fn backward(code: u32) -> u8 {
+    pub fn backward(code: u32) -> Option<u8> {
         if (code & !0x7f) == 0xf780 {
-            (code & 0xff) as u8
+            Some((code & 0xff) as u8)
         } else {
-            0
+            None
         }
     }
 }

@@ -281,11 +281,11 @@ def generate_single_byte_index(opts, crate, name):
             print(*args, **kwargs, file=f)
 
         p("#[inline]")
-        p("pub fn forward(code: u8) -> u16 {")
+        p("pub fn forward(code: u8) -> Option<u16> {")
         p("    match code {")
         for key, value in forward.items():
-            p(f"        {key} => {value},")
-        p("        _ => 0xffff")
+            p(f"        {key} => Some({value}),")
+        p("        _ => None")
         p("    }")
         p("}")
 
@@ -294,11 +294,11 @@ def generate_single_byte_index(opts, crate, name):
 
 
         p("#[inline]")
-        p("pub fn backward(code: u32) -> u8 {")
+        p("pub fn backward(code: u32) -> Option<u8> {")
         p("    match code {")
         for key, value in backward.items():
-            p(f"        {key} => {value},")
-        p("        _ => 0")
+            p(f"        {key} => Some({value}),")
+        p("        _ => None")
         p("    }")
         p("}")
 

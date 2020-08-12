@@ -13,8 +13,8 @@ use std::convert::Into;
 pub struct SingleByteEncoding {
     pub name: &'static str,
     pub whatwg_name: Option<&'static str>,
-    pub index_forward: fn(u8) -> u16,
-    pub index_backward: fn(u32) -> u8,
+    pub index_forward: fn(u8) -> Option<u16>,
+    pub index_backward: fn(u32) -> Option<u8>,
 }
 
 impl Encoding for SingleByteEncoding {
@@ -35,11 +35,11 @@ impl Encoding for SingleByteEncoding {
 /// An encoder for single-byte encodings based on ASCII.
 #[derive(Clone, Copy)]
 pub struct SingleByteEncoder {
-    index_backward: fn(u32) -> u8,
+    index_backward: fn(u32) -> Option<u8>,
 }
 
 impl SingleByteEncoder {
-    pub fn new(index_backward: fn(u32) -> u8) -> Box<dyn RawEncoder> {
+    pub fn new(index_backward: fn(u32) -> Option<u8>) -> Box<dyn RawEncoder> {
         Box::new(SingleByteEncoder {
             index_backward: index_backward,
         })
@@ -66,8 +66,7 @@ impl RawEncoder for SingleByteEncoder {
                 output.write_byte(ch as u8);
                 continue;
             } else {
-                let index = (self.index_backward)(ch as u32);
-                if index != 0 {
+                if let Some(index) = (self.index_backward)(ch as u32) {
                     output.write_byte(index);
                 } else {
                     return (
@@ -91,11 +90,11 @@ impl RawEncoder for SingleByteEncoder {
 /// A decoder for single-byte encodings based on ASCII.
 #[derive(Clone, Copy)]
 pub struct SingleByteDecoder {
-    index_forward: fn(u8) -> u16,
+    index_forward: fn(u8) -> Option<u16>,
 }
 
 impl SingleByteDecoder {
-    pub fn new(index_forward: fn(u8) -> u16) -> Box<dyn RawDecoder> {
+    pub fn new(index_forward: fn(u8) -> Option<u16>) -> Box<dyn RawDecoder> {
         Box::new(SingleByteDecoder {
             index_forward: index_forward,
         })
@@ -123,8 +122,7 @@ impl RawDecoder for SingleByteDecoder {
             if input[i] <= 0x7f {
                 output.write_char(input[i] as char);
             } else {
-                let ch = (self.index_forward)(input[i]);
-                if ch != 0xffff {
+                if let Some(ch) = (self.index_forward)(input[i]) {
                     output.write_char(as_char(ch as u32));
                 } else {
                     return (
@@ -149,15 +147,15 @@ impl RawDecoder for SingleByteDecoder {
 /// Algorithmic mapping for ISO 8859-1.
 pub mod iso_8859_1 {
     #[inline]
-    pub fn forward(code: u8) -> u16 {
-        code as u16
+    pub fn forward(code: u8) -> Option<u16> {
+        Some(code as u16)
     }
     #[inline]
-    pub fn backward(code: u32) -> u8 {
+    pub fn backward(code: u32) -> Option<u8> {
         if (code & !0x7f) == 0x80 {
-            code as u8
+            Some(code as u8)
         } else {
-            0
+            None
         }
     }
 }
