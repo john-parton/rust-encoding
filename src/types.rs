@@ -56,7 +56,7 @@ mod tests {
                                  prepend: self.prepend,
                                  toggle: false })
         }
-        fn raw_decoder(&self) -> Box<RawDecoder> { panic!("not supported") }
+        fn raw_decoder(&self) -> Box<dyn RawDecoder> { panic!("not supported") }
     }
 
     #[test]

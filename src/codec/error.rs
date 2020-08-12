@@ -14,7 +14,7 @@ pub struct ErrorEncoding;
 impl Encoding for ErrorEncoding {
     fn name(&self) -> &'static str { "error" }
     fn raw_encoder(&self) -> Box<dyn RawEncoder> { ErrorEncoder::new() }
-    fn raw_decoder(&self) -> Box<RawDecoder> { ErrorDecoder::new() }
+    fn raw_decoder(&self) -> Box<dyn RawDecoder> { ErrorDecoder::new() }
 }
 
 /// An encoder that always returns error.
@@ -47,14 +47,14 @@ impl RawEncoder for ErrorEncoder {
 pub struct ErrorDecoder;
 
 impl ErrorDecoder {
-    pub fn new() -> Box<RawDecoder> { Box::new(ErrorDecoder) }
+    pub fn new() -> Box<dyn RawDecoder> { Box::new(ErrorDecoder) }
 }
 
 impl RawDecoder for ErrorDecoder {
-    fn from_self(&self) -> Box<RawDecoder> { ErrorDecoder::new() }
+    fn from_self(&self) -> Box<dyn RawDecoder> { ErrorDecoder::new() }
 
     fn raw_feed(&mut self,
-                input: &[u8], _output: &mut StringWriter) -> (usize, Option<CodecError>) {
+                input: &[u8], _output: &mut dyn StringWriter) -> (usize, Option<CodecError>) {
         if input.len() > 0 {
             (0, Some(CodecError { upto: 1, cause: "invalid sequence".into() }))
         } else {
@@ -62,7 +62,7 @@ impl RawDecoder for ErrorDecoder {
         }
     }
 
-    fn raw_finish(&mut self, _output: &mut StringWriter) -> Option<CodecError> {
+    fn raw_finish(&mut self, _output: &mut dyn StringWriter) -> Option<CodecError> {
         None
     }
 }

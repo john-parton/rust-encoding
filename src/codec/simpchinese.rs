@@ -41,7 +41,7 @@ impl Encoding for GB18030Encoding {
     fn name(&self) -> &'static str { "gb18030" }
     fn whatwg_name(&self) -> Option<&'static str> { Some("gb18030") }
     fn raw_encoder(&self) -> Box<dyn RawEncoder> { GB18030Encoder::new() }
-    fn raw_decoder(&self) -> Box<RawDecoder> { GB18030Decoder::new() }
+    fn raw_decoder(&self) -> Box<dyn RawDecoder> { GB18030Decoder::new() }
 }
 
 /// An encoder for GB 18030.
@@ -85,7 +85,7 @@ impl Encoding for GBKEncoding {
     fn name(&self) -> &'static str { "gbk" }
     fn whatwg_name(&self) -> Option<&'static str> { Some("gbk") }
     fn raw_encoder(&self) -> Box<dyn RawEncoder> { GBKEncoder::new() }
-    fn raw_decoder(&self) -> Box<RawDecoder> { GB18030Decoder::new() }
+    fn raw_decoder(&self) -> Box<dyn RawDecoder> { GB18030Decoder::new() }
 }
 
 /// An encoder for GBK.
@@ -162,22 +162,22 @@ struct GB18030Decoder {
 }
 
 impl GB18030Decoder {
-    pub fn new() -> Box<RawDecoder> {
+    pub fn new() -> Box<dyn RawDecoder> {
         Box::new(GB18030Decoder { st: Default::default() })
     }
 }
 
 impl RawDecoder for GB18030Decoder {
-    fn from_self(&self) -> Box<RawDecoder> { GB18030Decoder::new() }
+    fn from_self(&self) -> Box<dyn RawDecoder> { GB18030Decoder::new() }
     fn is_ascii_compatible(&self) -> bool { true }
 
-    fn raw_feed(&mut self, input: &[u8], output: &mut StringWriter) -> (usize, Option<CodecError>) {
+    fn raw_feed(&mut self, input: &[u8], output: &mut dyn StringWriter) -> (usize, Option<CodecError>) {
         let (st, processed, err) = gb18030::raw_feed(self.st, input, output, &());
         self.st = st;
         (processed, err)
     }
 
-    fn raw_finish(&mut self, output: &mut StringWriter) -> Option<CodecError> {
+    fn raw_finish(&mut self, output: &mut dyn StringWriter) -> Option<CodecError> {
         let (st, err) = gb18030::raw_finish(self.st, output, &());
         self.st = st;
         err
@@ -480,7 +480,7 @@ impl Encoding for HZEncoding {
     fn name(&self) -> &'static str { "hz" }
     fn whatwg_name(&self) -> Option<&'static str> { None }
     fn raw_encoder(&self) -> Box<dyn RawEncoder> { HZEncoder::new() }
-    fn raw_decoder(&self) -> Box<RawDecoder> { HZDecoder::new() }
+    fn raw_decoder(&self) -> Box<dyn RawDecoder> { HZDecoder::new() }
 }
 
 /// An encoder for HZ.
@@ -553,22 +553,22 @@ struct HZDecoder {
 }
 
 impl HZDecoder {
-    pub fn new() -> Box<RawDecoder> {
+    pub fn new() -> Box<dyn RawDecoder> {
         Box::new(HZDecoder { st: Default::default() })
     }
 }
 
 impl RawDecoder for HZDecoder {
-    fn from_self(&self) -> Box<RawDecoder> { HZDecoder::new() }
+    fn from_self(&self) -> Box<dyn RawDecoder> { HZDecoder::new() }
     fn is_ascii_compatible(&self) -> bool { true }
 
-    fn raw_feed(&mut self, input: &[u8], output: &mut StringWriter) -> (usize, Option<CodecError>) {
+    fn raw_feed(&mut self, input: &[u8], output: &mut dyn StringWriter) -> (usize, Option<CodecError>) {
         let (st, processed, err) = hz::raw_feed(self.st, input, output, &());
         self.st = st;
         (processed, err)
     }
 
-    fn raw_finish(&mut self, output: &mut StringWriter) -> Option<CodecError> {
+    fn raw_finish(&mut self, output: &mut dyn StringWriter) -> Option<CodecError> {
         let (st, err) = hz::raw_finish(self.st, output, &());
         self.st = st;
         err

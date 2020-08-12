@@ -28,7 +28,7 @@ impl Encoding for Windows949Encoding {
     fn name(&self) -> &'static str { "windows-949" }
     fn whatwg_name(&self) -> Option<&'static str> { Some("euc-kr") } // WHATWG compatibility
     fn raw_encoder(&self) -> Box<dyn RawEncoder> { Windows949Encoder::new() }
-    fn raw_decoder(&self) -> Box<RawDecoder> { Windows949Decoder::new() }
+    fn raw_decoder(&self) -> Box<dyn RawDecoder> { Windows949Decoder::new() }
 }
 
 /// An encoder for Windows code page 949.
@@ -76,22 +76,22 @@ struct Windows949Decoder {
 }
 
 impl Windows949Decoder {
-    pub fn new() -> Box<RawDecoder> {
+    pub fn new() -> Box<dyn RawDecoder> {
         Box::new(Windows949Decoder { st: Default::default() })
     }
 }
 
 impl RawDecoder for Windows949Decoder {
-    fn from_self(&self) -> Box<RawDecoder> { Windows949Decoder::new() }
+    fn from_self(&self) -> Box<dyn RawDecoder> { Windows949Decoder::new() }
     fn is_ascii_compatible(&self) -> bool { true }
 
-    fn raw_feed(&mut self, input: &[u8], output: &mut StringWriter) -> (usize, Option<CodecError>) {
+    fn raw_feed(&mut self, input: &[u8], output: &mut dyn StringWriter) -> (usize, Option<CodecError>) {
         let (st, processed, err) = windows949::raw_feed(self.st, input, output, &());
         self.st = st;
         (processed, err)
     }
 
-    fn raw_finish(&mut self, output: &mut StringWriter) -> Option<CodecError> {
+    fn raw_finish(&mut self, output: &mut dyn StringWriter) -> Option<CodecError> {
         let (st, err) = windows949::raw_finish(self.st, output, &());
         self.st = st;
         err

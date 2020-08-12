@@ -23,7 +23,7 @@ impl Encoding for UTF16LEEncoding {
     fn name(&self) -> &'static str { "utf-16le" }
     fn whatwg_name(&self) -> Option<&'static str> { Some("utf-16le") }
     fn raw_encoder(&self) -> Box<dyn RawEncoder> { UTF16LEEncoder::new() }
-    fn raw_decoder(&self) -> Box<RawDecoder> { UTF16LEDecoder::new() }
+    fn raw_decoder(&self) -> Box<dyn RawDecoder> { UTF16LEDecoder::new() }
 }
 
 /// UTF-16 (UCS Transformation Format, 16-bit), in big endian.
@@ -41,7 +41,7 @@ impl Encoding for UTF16BEEncoding {
     fn name(&self) -> &'static str { "utf-16be" }
     fn whatwg_name(&self) -> Option<&'static str> { Some("utf-16be") }
     fn raw_encoder(&self) -> Box<dyn RawEncoder> { UTF16BEEncoder::new() }
-    fn raw_decoder(&self) -> Box<RawDecoder> { UTF16BEDecoder::new() }
+    fn raw_decoder(&self) -> Box<dyn RawDecoder> { UTF16BEDecoder::new() }
 }
 
 /// A shared encoder logic for UTF-16.
@@ -124,7 +124,7 @@ impl UTF16Decoder {
         UTF16Decoder { leadbyte: 0xffff, leadsurrogate: 0xffff }
     }
 
-    fn raw_feed<F>(&mut self, input: &[u8], output: &mut StringWriter,
+    fn raw_feed<F>(&mut self, input: &[u8], output: &mut dyn StringWriter,
                    concat_two_bytes: F) -> (usize, Option<CodecError>)
             where F: Fn(u16, u8) -> u16 {
         output.writer_hint(input.len() / 2); // when every codepoint is U+0000..007F
@@ -244,7 +244,7 @@ impl UTF16Decoder {
         (processed, None)
     }
 
-    fn raw_finish(&mut self, _output: &mut StringWriter) -> Option<CodecError> {
+    fn raw_finish(&mut self, _output: &mut dyn StringWriter) -> Option<CodecError> {
         let leadbyte = self.leadbyte;
         let leadsurrogate = self.leadsurrogate;
         self.leadbyte = 0xffff;
@@ -264,17 +264,17 @@ struct UTF16LEDecoder {
 }
 
 impl UTF16LEDecoder {
-    pub fn new() -> Box<RawDecoder> {
+    pub fn new() -> Box<dyn RawDecoder> {
         Box::new(UTF16LEDecoder { inner: UTF16Decoder::new() })
     }
 }
 
 impl RawDecoder for UTF16LEDecoder {
-    fn from_self(&self) -> Box<RawDecoder> { UTF16LEDecoder::new() }
-    fn raw_feed(&mut self, input: &[u8], output: &mut StringWriter) -> (usize, Option<CodecError>) {
+    fn from_self(&self) -> Box<dyn RawDecoder> { UTF16LEDecoder::new() }
+    fn raw_feed(&mut self, input: &[u8], output: &mut dyn StringWriter) -> (usize, Option<CodecError>) {
         self.inner.raw_feed(input, output, |lead: u16, trail: u8| lead | ((trail as u16) << 8))
     }
-    fn raw_finish(&mut self, output: &mut StringWriter) -> Option<CodecError> {
+    fn raw_finish(&mut self, output: &mut dyn StringWriter) -> Option<CodecError> {
         self.inner.raw_finish(output)
     }
 }
@@ -286,17 +286,17 @@ struct UTF16BEDecoder {
 }
 
 impl UTF16BEDecoder {
-    pub fn new() -> Box<RawDecoder> {
+    pub fn new() -> Box<dyn RawDecoder> {
         Box::new(UTF16BEDecoder { inner: UTF16Decoder::new() })
     }
 }
 
 impl RawDecoder for UTF16BEDecoder {
-    fn from_self(&self) -> Box<RawDecoder> { UTF16BEDecoder::new() }
-    fn raw_feed(&mut self, input: &[u8], output: &mut StringWriter) -> (usize, Option<CodecError>) {
+    fn from_self(&self) -> Box<dyn RawDecoder> { UTF16BEDecoder::new() }
+    fn raw_feed(&mut self, input: &[u8], output: &mut dyn StringWriter) -> (usize, Option<CodecError>) {
         self.inner.raw_feed(input, output, |lead: u16, trail: u8| (lead << 8) | trail as u16)
     }
-    fn raw_finish(&mut self, output: &mut StringWriter) -> Option<CodecError> {
+    fn raw_finish(&mut self, output: &mut dyn StringWriter) -> Option<CodecError> {
         self.inner.raw_finish(output)
     }
 }

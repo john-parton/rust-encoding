@@ -20,7 +20,7 @@ pub struct ASCIIEncoding;
 impl Encoding for ASCIIEncoding {
     fn name(&self) -> &'static str { "ascii" }
     fn raw_encoder(&self) -> Box<dyn RawEncoder> { ASCIIEncoder::new() }
-    fn raw_decoder(&self) -> Box<RawDecoder> { ASCIIDecoder::new() }
+    fn raw_decoder(&self) -> Box<dyn RawDecoder> { ASCIIDecoder::new() }
 }
 
 /// An encoder for ASCII.
@@ -63,17 +63,17 @@ impl RawEncoder for ASCIIEncoder {
 pub struct ASCIIDecoder;
 
 impl ASCIIDecoder {
-    pub fn new() -> Box<RawDecoder> { Box::new(ASCIIDecoder) }
+    pub fn new() -> Box<dyn RawDecoder> { Box::new(ASCIIDecoder) }
 }
 
 impl RawDecoder for ASCIIDecoder {
-    fn from_self(&self) -> Box<RawDecoder> { ASCIIDecoder::new() }
+    fn from_self(&self) -> Box<dyn RawDecoder> { ASCIIDecoder::new() }
     fn is_ascii_compatible(&self) -> bool { true }
 
-    fn raw_feed(&mut self, input: &[u8], output: &mut StringWriter) -> (usize, Option<CodecError>) {
+    fn raw_feed(&mut self, input: &[u8], output: &mut dyn StringWriter) -> (usize, Option<CodecError>) {
         output.writer_hint(input.len());
 
-        fn write_ascii_bytes(output: &mut StringWriter, buf: &[u8]) {
+        fn write_ascii_bytes(output: &mut dyn StringWriter, buf: &[u8]) {
             output.write_str(unsafe {mem::transmute(buf)});
         }
 
@@ -91,7 +91,7 @@ impl RawDecoder for ASCIIDecoder {
         }
     }
 
-    fn raw_finish(&mut self, _output: &mut StringWriter) -> Option<CodecError> {
+    fn raw_finish(&mut self, _output: &mut dyn StringWriter) -> Option<CodecError> {
         None
     }
 }

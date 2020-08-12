@@ -31,7 +31,7 @@ impl Encoding for BigFive2003Encoding {
     fn name(&self) -> &'static str { "big5-2003" }
     fn whatwg_name(&self) -> Option<&'static str> { Some("big5") } // WHATWG compatibility
     fn raw_encoder(&self) -> Box<dyn RawEncoder> { BigFive2003Encoder::new() }
-    fn raw_decoder(&self) -> Box<RawDecoder> { BigFive2003HKSCS2008Decoder::new() }
+    fn raw_decoder(&self) -> Box<dyn RawDecoder> { BigFive2003HKSCS2008Decoder::new() }
 }
 
 /// An encoder for Big5-2003.
@@ -81,22 +81,22 @@ struct BigFive2003HKSCS2008Decoder {
 }
 
 impl BigFive2003HKSCS2008Decoder {
-    pub fn new() -> Box<RawDecoder> {
+    pub fn new() -> Box<dyn RawDecoder> {
         Box::new(BigFive2003HKSCS2008Decoder { st: Default::default() })
     }
 }
 
 impl RawDecoder for BigFive2003HKSCS2008Decoder {
-    fn from_self(&self) -> Box<RawDecoder> { BigFive2003HKSCS2008Decoder::new() }
+    fn from_self(&self) -> Box<dyn RawDecoder> { BigFive2003HKSCS2008Decoder::new() }
     fn is_ascii_compatible(&self) -> bool { true }
 
-    fn raw_feed(&mut self, input: &[u8], output: &mut StringWriter) -> (usize, Option<CodecError>) {
+    fn raw_feed(&mut self, input: &[u8], output: &mut dyn StringWriter) -> (usize, Option<CodecError>) {
         let (st, processed, err) = bigfive2003::raw_feed(self.st, input, output, &());
         self.st = st;
         (processed, err)
     }
 
-    fn raw_finish(&mut self, output: &mut StringWriter) -> Option<CodecError> {
+    fn raw_finish(&mut self, output: &mut dyn StringWriter) -> Option<CodecError> {
         let (st, err) = bigfive2003::raw_finish(self.st, output, &());
         self.st = st;
         err

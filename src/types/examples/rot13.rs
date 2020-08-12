@@ -21,7 +21,7 @@ impl Encoding for ROT13Encoding {
     fn name(&self) -> &'static str { "rot13" }
     fn whatwg_name(&self) -> Option<&'static str> { None }
     fn raw_encoder(&self) -> Box<dyn RawEncoder> { ROT13Encoder::new() }
-    fn raw_decoder(&self) -> Box<RawDecoder> { ROT13Decoder::new() }
+    fn raw_decoder(&self) -> Box<dyn RawDecoder> { ROT13Decoder::new() }
 }
 
 #[derive(Clone, Copy)]
@@ -57,18 +57,18 @@ impl RawEncoder for ROT13Encoder {
 pub struct ROT13Decoder;
 
 impl ROT13Decoder {
-    pub fn new() -> Box<RawDecoder> {
+    pub fn new() -> Box<dyn RawDecoder> {
         Box::new(ROT13Decoder)
     }
 }
 
 impl RawDecoder for ROT13Decoder {
-    fn from_self(&self) -> Box<RawDecoder> {
+    fn from_self(&self) -> Box<dyn RawDecoder> {
         ROT13Decoder::new()
     }
     fn is_ascii_compatible(&self) -> bool { true }
 
-    fn raw_feed(&mut self, input: &[u8], output: &mut StringWriter) -> (usize, Option<CodecError>) {
+    fn raw_feed(&mut self, input: &[u8], output: &mut dyn StringWriter) -> (usize, Option<CodecError>) {
         output.writer_hint(input.len());
         let string = match from_utf8(input) {
             Ok(s) => s,
@@ -87,7 +87,7 @@ impl RawDecoder for ROT13Decoder {
         (input.len(), None)
     }
 
-    fn raw_finish(&mut self, _output: &mut StringWriter) -> Option<CodecError> {
+    fn raw_finish(&mut self, _output: &mut dyn StringWriter) -> Option<CodecError> {
         None
     }
 }

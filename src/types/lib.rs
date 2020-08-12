@@ -158,7 +158,7 @@ pub trait RawEncoder: Send + 'static {
 /// This is a lower level interface, and normally `Encoding::decode` should be used instead.
 pub trait RawDecoder: Send + 'static {
     /// Creates a fresh `RawDecoder` instance which parameters are same as `self`.
-    fn from_self(&self) -> Box<RawDecoder>;
+    fn from_self(&self) -> Box<dyn RawDecoder>;
 
     /// Returns true if this encoding is compatible to ASCII,
     /// i.e. bytes 00 through 7F always map to U+0000 through U+007F and nothing else.
@@ -169,12 +169,12 @@ pub trait RawDecoder: Send + 'static {
     /// and returns an offset to the first unprocessed byte
     /// (that can be zero when the first such byte appeared in the prior calls to `raw_feed`)
     /// and optional error information (None means success).
-    fn raw_feed(&mut self, input: &[u8], output: &mut StringWriter) -> (usize, Option<CodecError>);
+    fn raw_feed(&mut self, input: &[u8], output: &mut dyn StringWriter) -> (usize, Option<CodecError>);
 
     /// Finishes the decoder,
     /// pushes the a decoded string at the end of the given output,
     /// and returns optional error information (None means success).
-    fn raw_finish(&mut self, output: &mut StringWriter) -> Option<CodecError>;
+    fn raw_finish(&mut self, output: &mut dyn StringWriter) -> Option<CodecError>;
 }
 
 /// A trait object using dynamic dispatch which is a sendable reference to the encoding,
@@ -196,7 +196,7 @@ pub trait Encoding {
     fn raw_encoder(&self) -> Box<dyn RawEncoder>;
 
     /// Creates a new decoder.
-    fn raw_decoder(&self) -> Box<RawDecoder>;
+    fn raw_decoder(&self) -> Box<dyn RawDecoder>;
 
     /// An easy-to-use interface to `RawEncoder`.
     /// On the encoder error `trap` is called,
@@ -256,7 +256,7 @@ pub trait Encoding {
     ///
     /// This does *not* handle partial characters at the beginning or end of `input`!
     /// Use `RawDecoder` for incremental decoding.
-    fn decode_to(&self, input: &[u8], trap: DecoderTrap, ret: &mut StringWriter)
+    fn decode_to(&self, input: &[u8], trap: DecoderTrap, ret: &mut dyn StringWriter)
         -> Result<(), Cow<'static, str>>
     {
         // we don't need to keep `unprocessed` here;
@@ -307,7 +307,7 @@ pub type EncoderTrapFunc =
 
 /// A type of the bare function in `DecoderTrap` values.
 pub type DecoderTrapFunc =
-    extern "Rust" fn(decoder: &mut RawDecoder, input: &[u8], output: &mut StringWriter) -> bool;
+    extern "Rust" fn(decoder: &mut RawDecoder, input: &[u8], output: &mut dyn StringWriter) -> bool;
 
 /// Trap, which handles decoder errors.
 #[derive(Copy)]
@@ -329,7 +329,7 @@ pub enum DecoderTrap {
 impl DecoderTrap {
     /// Handles a decoder error. May write to the output writer.
     /// Returns true only when it is fine to keep going.
-    pub fn trap(&self, decoder: &mut RawDecoder, input: &[u8], output: &mut StringWriter) -> bool {
+    pub fn trap(&self, decoder: &mut RawDecoder, input: &[u8], output: &mut dyn StringWriter) -> bool {
         match *self {
             DecoderTrap::Strict     => false,
             DecoderTrap::Replace    => { output.write_char('\u{fffd}'); true },

@@ -33,7 +33,7 @@ impl Encoding for EUCJPEncoding {
     fn name(&self) -> &'static str { "euc-jp" }
     fn whatwg_name(&self) -> Option<&'static str> { Some("euc-jp") }
     fn raw_encoder(&self) -> Box<dyn RawEncoder> { EUCJPEncoder::new() }
-    fn raw_decoder(&self) -> Box<RawDecoder> { EUCJP0212Decoder::new() }
+    fn raw_decoder(&self) -> Box<dyn RawDecoder> { EUCJP0212Decoder::new() }
 }
 
 /// An encoder for EUC-JP with unused G3 character set.
@@ -90,22 +90,22 @@ struct EUCJP0212Decoder {
 }
 
 impl EUCJP0212Decoder {
-    pub fn new() -> Box<RawDecoder> {
+    pub fn new() -> Box<dyn RawDecoder> {
         Box::new(EUCJP0212Decoder { st: Default::default() })
     }
 }
 
 impl RawDecoder for EUCJP0212Decoder {
-    fn from_self(&self) -> Box<RawDecoder> { EUCJP0212Decoder::new() }
+    fn from_self(&self) -> Box<dyn RawDecoder> { EUCJP0212Decoder::new() }
     fn is_ascii_compatible(&self) -> bool { true }
 
-    fn raw_feed(&mut self, input: &[u8], output: &mut StringWriter) -> (usize, Option<CodecError>) {
+    fn raw_feed(&mut self, input: &[u8], output: &mut dyn StringWriter) -> (usize, Option<CodecError>) {
         let (st, processed, err) = eucjp::raw_feed(self.st, input, output, &());
         self.st = st;
         (processed, err)
     }
 
-    fn raw_finish(&mut self, output: &mut StringWriter) -> Option<CodecError> {
+    fn raw_finish(&mut self, output: &mut dyn StringWriter) -> Option<CodecError> {
         let (st, err) = eucjp::raw_finish(self.st, output, &());
         self.st = st;
         err
@@ -453,7 +453,7 @@ impl Encoding for Windows31JEncoding {
     fn name(&self) -> &'static str { "windows-31j" }
     fn whatwg_name(&self) -> Option<&'static str> { Some("shift_jis") } // WHATWG compatibility
     fn raw_encoder(&self) -> Box<dyn RawEncoder> { Windows31JEncoder::new() }
-    fn raw_decoder(&self) -> Box<RawDecoder> { Windows31JDecoder::new() }
+    fn raw_decoder(&self) -> Box<dyn RawDecoder> { Windows31JDecoder::new() }
 }
 
 /// An encoder for Shift_JIS with IBM/NEC extensions.
@@ -512,22 +512,22 @@ struct Windows31JDecoder {
 }
 
 impl Windows31JDecoder {
-    pub fn new() -> Box<RawDecoder> {
+    pub fn new() -> Box<dyn RawDecoder> {
         Box::new(Windows31JDecoder { st: Default::default() })
     }
 }
 
 impl RawDecoder for Windows31JDecoder {
-    fn from_self(&self) -> Box<RawDecoder> { Windows31JDecoder::new() }
+    fn from_self(&self) -> Box<dyn RawDecoder> { Windows31JDecoder::new() }
     fn is_ascii_compatible(&self) -> bool { true }
 
-    fn raw_feed(&mut self, input: &[u8], output: &mut StringWriter) -> (usize, Option<CodecError>) {
+    fn raw_feed(&mut self, input: &[u8], output: &mut dyn StringWriter) -> (usize, Option<CodecError>) {
         let (st, processed, err) = windows31j::raw_feed(self.st, input, output, &());
         self.st = st;
         (processed, err)
     }
 
-    fn raw_finish(&mut self, output: &mut StringWriter) -> Option<CodecError> {
+    fn raw_finish(&mut self, output: &mut dyn StringWriter) -> Option<CodecError> {
         let (st, err) = windows31j::raw_finish(self.st, output, &());
         self.st = st;
         err
@@ -775,7 +775,7 @@ impl Encoding for ISO2022JPEncoding {
     fn name(&self) -> &'static str { "iso-2022-jp" }
     fn whatwg_name(&self) -> Option<&'static str> { Some("iso-2022-jp") }
     fn raw_encoder(&self) -> Box<dyn RawEncoder> { ISO2022JPEncoder::new() }
-    fn raw_decoder(&self) -> Box<RawDecoder> { ISO2022JPDecoder::new() }
+    fn raw_decoder(&self) -> Box<dyn RawDecoder> { ISO2022JPDecoder::new() }
 }
 
 #[derive(PartialEq,Clone,Copy)]
@@ -856,22 +856,22 @@ struct ISO2022JPDecoder {
 }
 
 impl ISO2022JPDecoder {
-    pub fn new() -> Box<RawDecoder> {
+    pub fn new() -> Box<dyn RawDecoder> {
         Box::new(ISO2022JPDecoder { st: Default::default() })
     }
 }
 
 impl RawDecoder for ISO2022JPDecoder {
-    fn from_self(&self) -> Box<RawDecoder> { ISO2022JPDecoder::new() }
+    fn from_self(&self) -> Box<dyn RawDecoder> { ISO2022JPDecoder::new() }
     fn is_ascii_compatible(&self) -> bool { false }
 
-    fn raw_feed(&mut self, input: &[u8], output: &mut StringWriter) -> (usize, Option<CodecError>) {
+    fn raw_feed(&mut self, input: &[u8], output: &mut dyn StringWriter) -> (usize, Option<CodecError>) {
         let (st, processed, err) = iso2022jp::raw_feed(self.st, input, output, &());
         self.st = st;
         (processed, err)
     }
 
-    fn raw_finish(&mut self, output: &mut StringWriter) -> Option<CodecError> {
+    fn raw_finish(&mut self, output: &mut dyn StringWriter) -> Option<CodecError> {
         let (st, err) = iso2022jp::raw_finish(self.st, output, &());
         self.st = st;
         err
