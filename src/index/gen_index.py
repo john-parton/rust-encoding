@@ -10,15 +10,16 @@ import os.path
 import re
 import heapq
 import argparse
+from pathlib import Path
 
 
 def open_index(path, comments):
-    for line in open(path):
+    for line in open(path, 'rb'):
         line = line.strip()
         if not line:
             continue
-        if line.startswith('#'):
-            comments.append('//' + line[1:])
+        if line.startswith(b'#'):
+            comments.append('//' + line.decode()[1:])
             continue
         parts = line.split(None, 2)
         key = int(parts[0], 0)
@@ -1007,26 +1008,42 @@ INDICES = [
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--flush-cache', action='store_true',
-                        help='flush the download cache')
-    parser.add_argument('--cache-dir',
-                        default=os.path.join(os.path.dirname(sys.argv[0]), '.cache'),
-                        help='set the download cache directory [default: %(default)s]')
-    parser.add_argument('--singlebyte', dest='func_filter', action='store_const',
-                        const=generate_single_byte_index,
-                        help='generate only single-byte indices')
-    parser.add_argument('--multibyte', dest='func_filter', action='store_const',
-                        const=generate_multi_byte_index,
-                        help='generate only multi-byte indices')
-    parser.add_argument('--max-backward-search-multibyte', type=lambda v: int(v, 0),
-                        metavar='MAX_SEARCH', default='0x200',
-                        help='set the max search limit of the unoptimized backward mapping '
-                             'for multi-byte indices [default: %(default)s]\n')
-    parser.add_argument('--no-premapping', action='store_true',
-                        help='disable premapping; trades table size for decoder performance')
-    parser.add_argument('filters', nargs='*',
-                        help='substring of indices to regenerate')
+    parser.add_argument(
+        '-f', '--flush-cache', action='store_true',
+        help='flush the download cache'
+    )
+    parser.add_argument(
+        '--cache-dir',
+        default=Path(__file__).parent.resolve() / '.cache',
+        help='set the download cache directory [default: %(default)s]',
+        type=Path
+    )
+    parser.add_argument(
+        '--singlebyte', dest='func_filter', action='store_const',
+        const=generate_single_byte_index,
+        help='generate only single-byte indices'
+    )
+    parser.add_argument(
+        '--multibyte', dest='func_filter', action='store_const',
+        const=generate_multi_byte_index,
+        help='generate only multi-byte indices'
+        )
+    parser.add_argument(
+        '--max-backward-search-multibyte', type=lambda v: int(v, 0),
+        metavar='MAX_SEARCH', default='0x200',
+        help='set the max search limit of the unoptimized backward mapping '
+             'for multi-byte indices [default: %(default)s]\n'
+    )
+    parser.add_argument(
+        '--no-premapping', action='store_true',
+        help='disable premapping; trades table size for decoder performance'
+    )
+    parser.add_argument(
+        'filters', nargs='*', help='substring of indices to regenerate'
+    )
     opts = parser.parse_args()
+
+    assert False, opts.cache_dir
 
     totalsz = totalszslow = 0
     for index, generate in INDICES:
