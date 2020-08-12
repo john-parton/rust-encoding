@@ -303,7 +303,7 @@ mod windows949_tests {
     fn bench_encode_short_text(bencher: &mut test::Bencher) {
         let s = testutils::KOREAN_TEXT;
         bencher.bytes = s.len() as u64;
-        bencher.iter(|| test::black_box({ Windows949Encoding.encode(&s, EncoderTrap::Strict) }))
+        bencher.iter(|| test::black_box( Windows949Encoding.encode(&s, EncoderTrap::Strict) ))
     }
 
     #[bench]
@@ -313,6 +313,6 @@ mod windows949_tests {
             .ok()
             .unwrap();
         bencher.bytes = s.len() as u64;
-        bencher.iter(|| test::black_box({ Windows949Encoding.decode(&s, DecoderTrap::Strict) }))
+        bencher.iter(|| test::black_box( Windows949Encoding.decode(&s, DecoderTrap::Strict) ))
     }
 }
