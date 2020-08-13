@@ -215,6 +215,38 @@ pub static ASCII_TEXT: &'static str =
      a second language and is an official language of the European Union, many Commonwealth \
      countries and the United Nations, as well as in many world organisations.";
 
+ 
+ /// Some Latin-1 text to test
+ //
+ // the first few sentences of the article "An Ghaeilge" from Irish Wikipedia.
+ // https://ga.wikipedia.org/wiki/An_Ghaeilge
+ pub static IRISH_TEXT: &'static str =
+     "Is ceann de na teangacha Ceilteacha í an Ghaeilge (nó Gaeilge na hÉireann mar a thugtar \
+      uirthi corruair), agus ceann den dtrí cinn de theangacha Ceilteacha ar a dtugtar na \
+      teangacha Gaelacha (.i. an Ghaeilge, Gaeilge na hAlban agus Gaeilge Mhanann) go háirithe. \
+      Labhraítear in Éirinn go príomha í, ach tá cainteoirí Gaeilge ina gcónaí in áiteanna eile ar \
+      fud an domhain. Is í an teanga náisiúnta nó dhúchais agus an phríomhtheanga oifigiúil i \
+      bPoblacht na hÉireann í an Ghaeilge. Tá an Béarla luaite sa Bhunreacht mar theanga oifigiúil \
+      eile. Tá aitheantas oifigiúil aici chomh maith i dTuaisceart Éireann, atá mar chuid den \
+      Ríocht Aontaithe. Ar an 13 Meitheamh 2005 d'aontaigh airí gnóthaí eachtracha an Aontais \
+      Eorpaigh glacadh leis an nGaeilge mar theanga oifigiúil oibre san AE";
+
+// Russian/cyrillic text to test
+//
+// the first few sentences of the article "Russian Language" from Russian Wikipedia.
+// Had to replace a few characters to get it to work
+pub static RUSSIAN_TEXT: &'static str =
+    "Ру?сский язы?к Информация о файле слушать)[~ 3] один из восточнославянских языков, \
+     национальный язык русского народа. Является одним из наиболее распространённых языков мира \
+     шестым среди всех языков мира по общей численности говорящих и восьмым по численности \
+     владеющих им как родным[9]. Русский является также самым распространённым славянским \
+     языком[10] и самым распространённым языком в Европе ? географически и по числу носителей \
+     языка как родного[7]. Русский язык ? государственный язык Российской Федерации, один из \
+     двух государственных языков Белоруссии, один из официальных языков Казахстана, Киргизии и \
+     некоторых других стран, основной язык международного общения в Центральной Евразии, в \
+     Восточной Европе, в странах бывшего Советского Союза, один из шести рабочих языков ООН, \
+     ЮНЕСКО и других международных организаций[11][12][13].";
+
 /// Some Korean text to test.
 //
 // the first paragraphs of the article "Korean Language" from Korean Wikipedia.
